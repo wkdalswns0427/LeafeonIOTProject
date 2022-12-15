@@ -1,7 +1,5 @@
-#include <string.h>
-#include <math.h>
-#include <Wire.h>
-
+#include "config.h"
+#include "mywifi.h"
 #include "CCS811.h"
 #include "BME280.h"
 #include "PMS7003.h"
@@ -49,6 +47,15 @@ void setup() {
   xTaskCreatePinnedToCore(
     TaskBME280
     ,  "TaskBME280"
+    ,  STACK_SIZE  
+    ,  NULL
+    ,  0  // Priority
+    ,  NULL 
+    ,  ARDUINO_RUNNING_CORE);
+
+    xTaskCreatePinnedToCore(
+    ServerTask
+    ,  "ServerTask"
     ,  STACK_SIZE  
     ,  NULL
     ,  0  // Priority
@@ -107,8 +114,12 @@ void TaskBME280(void *pvParameters)
 }
 
 
-void TaskOTAServer()
+void serverTask(void *pvParameters)
 {
-    server.handleClient();
-    delay(1);
+    (void) pvParameters;
+
+    for(;;)
+    {
+
+    }
 }
