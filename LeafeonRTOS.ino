@@ -1,8 +1,8 @@
-#include "config.h"
-#include "mywifi.h"
-#include "CCS811.h"
-#include "BME280.h"
-#include "PMS7003.h"
+#include "src/config.h"
+#include "src/mywifi.h"
+#include "src/CCS811.h"
+#include "src/BME280.h"
+#include "src/PMS7003.h"
 
 #if CONFIG_FREERTOS_UNICORE
 #define ARDUINO_RUNNING_CORE 0
@@ -114,7 +114,7 @@ void TaskBME280(void *pvParameters)
 }
 
 
-void serverTask(void *pvParameters)
+void ServerTask(void *pvParameters)
 {
     (void) pvParameters;
 
