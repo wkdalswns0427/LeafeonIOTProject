@@ -1,8 +1,15 @@
 #include <Arduino.h>
-#include <WiFi.h>
-#include "mywifi.h"
-WiFiServer server(80);
 
+#include "mywifi.h"
+
+const char* ssid       = "Drimaes_AP";
+const char* password   = "drimaes1303";
+
+const char* ntpServer1 = "pool.ntp.org";
+const char* ntpServer2 = "time.nist.gov";
+const long  gmtOffset_sec = 3600;
+const int   daylightOffset_sec = 3600;
+const char* time_zone = "CET-1CEST,M3.5.0,M10.5.0/3";
 
 void setup_wifi() {
 
