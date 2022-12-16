@@ -10,6 +10,10 @@
 
 #define STACK_SIZE 1024
 
+#ifndef LED_BUILTIN
+#define LED_BUILTIN 13
+#endif
+
 void setup() {
   
   Serial.begin(115200);
@@ -38,18 +42,18 @@ void setup() {
     ,  "TaskBME280"
     ,  STACK_SIZE  
     ,  NULL
-    ,  0  // Priority
+    ,  3  // Priority
     ,  NULL 
-    ,  ArduinoCore1);
+    ,  ArduinoCore0);
 
     xTaskCreatePinnedToCore(
-    ServerTask
-    ,  "ServerTask"
+    TaskBlink
+    ,  "TaskBlink"
     ,  STACK_SIZE  
     ,  NULL
     ,  0  // Priority
     ,  NULL 
-    ,  ArduinoCore1);
+    ,  ArduinoCore0);
   
 }
 
@@ -57,3 +61,4 @@ void loop()
 {
   // Empty
 }
+

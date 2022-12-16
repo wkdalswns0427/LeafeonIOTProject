@@ -5,5 +5,6 @@ void TaskCCS811(void *pvParameters);
 void TaskPMS7003(void *pvParameters);
 void TaskBME280(void *pvParameters);
 void ServerTask(void *pvParameters);
+void TaskBlink(void *pvParameters);
 
 #endif
