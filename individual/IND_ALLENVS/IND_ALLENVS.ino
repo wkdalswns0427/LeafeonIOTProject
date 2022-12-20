@@ -28,7 +28,7 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("Serial Init");
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, 3, 1);
 
