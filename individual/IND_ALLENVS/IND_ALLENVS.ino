@@ -7,7 +7,7 @@ typedef DFRobot_BME280_IIC    BME;
 
 PMS pms(Serial1);
 PMS::DATA data;
-BME   bme(&Wire, 0x76);   
+BME bme(&Wire, 0x76);   
 DFRobot_CCS811 CCS811;
 
 uint baseline = 0;
@@ -29,6 +29,7 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("Serial Init");
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, 3, 1);
 
   Serial.println("bme read data test");
