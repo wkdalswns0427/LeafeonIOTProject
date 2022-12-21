@@ -1,74 +1,44 @@
-
-/*********************************************************************
-This is an example which demonstrates use of the Plantower PMS7003
-laser particle counter. This should also work the the PMS5003 sensor,
-as they share the same protocol.
-
-For more information about the PMS7003, see README.md.
-
-Written by Jason Striegel.
-BSD license. See license.txt for details.
-**********************************************************************/
-
 #include "Plantower_PMS7003.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-
-char output[256];
-Plantower_PMS7003 pms7003 = Plantower_PMS7003();
-
+Plantower_PMS7003 sensor = Plantower_PMS7003();
 
 void setup()
 {
-  Serial.begin(9600);
+  // Initialize the sensor with the serial device
+  // that it's connected to. Hardware Serial1 is the
+  // default, if no parameter is provided to init()
 
-  Serial1.begin(9600);
-  pms7003.init(&Serial1);
-  //pms7003.debug = true;
+  Serial1.begin(9600);    // Note: 9600 baud
+  sensor.init(&Serial1);
+  Serial.begin(9600);
+  Serial.println("Serial init");
 
 }
- 
+
 void loop()
 {
-  pms7003.updateFrame();
+  // Use updateFrame() to read in sensor data in your
+  // loop until hasNewData() returns true.
+  sensor.updateFrame();
 
-  if (pms7003.hasNewData()) {
-
-    sprintf(output, "\nSensor Version: %d    Error Code: %d\n",
-                  pms7003.getHWVersion(),
-                  pms7003.getErrorCode());
-    Serial.print(output);
-
-    sprintf(output, "    PM1.0 (ug/m3): %2d     [atmos: %d]\n",
-                  pms7003.getPM_1_0(),
-                  pms7003.getPM_1_0_atmos());              
-    Serial.print(output);
-    sprintf(output, "    PM2.5 (ug/m3): %2d     [atmos: %d]\n",
-                  pms7003.getPM_2_5(),
-                  pms7003.getPM_2_5_atmos());
-    Serial.print(output);
-    sprintf(output, "    PM10  (ug/m3): %2d     [atmos: %d]\n",
-                  pms7003.getPM_10_0(),
-                  pms7003.getPM_10_0_atmos());              
-    Serial.print(output);
-
-    sprintf(output, "\n    RAW: %2d[>0.3] %2d[>0.5] %2d[>1.0] %2d[>2.5] %2d[>5.0] %2d[>10]\n",
-                  pms7003.getRawGreaterThan_0_3(),
-                  pms7003.getRawGreaterThan_0_5(),
-                  pms7003.getRawGreaterThan_1_0(),
-                  pms7003.getRawGreaterThan_2_5(),
-                  pms7003.getRawGreaterThan_5_0(),
-                  pms7003.getRawGreaterThan_10_0());
-    Serial.print(output);
-
-
+  // Note: once updateFrame() is called, all data is
+  // invalid until hasNewData() returns true.
+  if (sensor.hasNewData())
+  {
+    // PM1.0: getPM_1_0() 
+    Serial.print("PM1.0: ");
+    Serial.print(sensor.getPM_1_0());
+    
+    // PM2.5: getPM_2_5()
+    Serial.print(" PM2.5: ");
+    Serial.print(sensor.getPM_2_5());
+    
+    // PM10: getPM_10_0()
+    Serial.print(" PM10: ");
+    Serial.print(sensor.getPM_10_0());
+    Serial.println();
   }
 
-
 }
-
-
-
-
-
-
-

@@ -2,11 +2,10 @@
 #include "DFRobot_CCS811.h"
 
 typedef DFRobot_BME280_IIC    BME;    // ******** use abbreviations instead of full names ********
+typedef DFRobot_CCS811        CCS;
 
-/**IIC address is 0x77 when pin SDO is high */
-/**IIC address is 0x76 when pin SDO is low */
 BME   bme(&Wire, 0x76);   // select TwoWire peripheral and set sensor address
-DFRobot_CCS811 CCS811;
+CCS CCS811(&Wire, 0x5A);
 
 uint baseline = 0;
 
