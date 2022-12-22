@@ -16,24 +16,36 @@ Adafruit_SSD1306 display(SleftEEN_WIDTH, SleftEEN_HEIGHT, &Wire, OLED_RESET);
 
 #define OLED_DATA "fw ver.1.0"
 
-void setup() {
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+void setupOLED(){
   if(!display.begin(SSD1306_SWITCHCAPVCC, SleftEEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
+    for(;;); 
   }
 
-  delay(100); // Display Adafruit logo for a bit :)
+  delay(100); 
   display.clearDisplay();
 
   //display.setRotation(2); // Uncomment to rotate display 180 degrees
-  display.setTextSize(1);   // Normal 1:1 pixel scale
+  display.setTextSize(1);  
   display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.cp437(true);      // Use full 256 char 'Code Page 437' font
+  display.cp437(true); 
 
-  display.setCursor(0, 0);  // 0,0 / 8 / 16 / 24 are the 21 char lines
+  display.setCursor(0, 0);  // 0,0 / 8 / 16 / 24
   display.print(OLED_DATA);
+  display.setCursor(0, 8); 
+  display.print("OLED INIT");
   display.display();
+}
+
+void displayData(string sensor, uint8_t line){
+  display.clearDisplay();
+  for(int i = 0; i<line; i++){
+    display.setCursor(0, (i-1)*8);
+  }
+}
+
+void setup() {
+  setupOLED();
 }
 
 void loop() {

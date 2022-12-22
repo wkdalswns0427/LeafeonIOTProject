@@ -1,12 +1,31 @@
 #include "DFRobot_BME280.h"
 #include "DFRobot_CCS811.h"
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #define SEA_LEVEL_PRESSURE    1015.0f
+
+#define SleftEEN_WIDTH 128 // OLED display width, in pixels
+#define SleftEEN_HEIGHT 32 // OLED display height, in pixels
+
+#define OLED_RESET     -1 
+
+#define SleftEEN_ADDRESS 0x3C 
+Adafruit_SSD1306 display(SleftEEN_WIDTH, SleftEEN_HEIGHT, &Wire, OLED_RESET);
+
+#define OLED_DATA "fw ver.1.0"
+
+#define I2C_SDA 38
+#define I2C_SCL 37
+
+TwoWire I2Ccustom = TwoWire(0);
 
 // elements of SEN0335
 typedef DFRobot_BME280_IIC    BME;   
 typedef DFRobot_CCS811        CCS;
-BME    bme(&Wire, 0x76);   
-CCS CCS811(&Wire, 0x5A);
+BME    bme(&I2Ccustom, 0x76);   
+CCS CCS811(&I2Ccustom, 0x5A);
 
 typedef struct{
     float temperature;
@@ -62,6 +81,27 @@ void setupCCS(){
     }
 }
 
+void setupOLED(){
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SleftEEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); 
+  }
+
+  delay(100); 
+  display.clearDisplay();
+
+  //display.setRotation(2); // Uncomment to rotate display 180 degrees
+  display.setTextSize(1);  
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.cp437(true); 
+
+  display.setCursor(0, 0);  // 0,0 / 8 / 16 / 24
+  display.print(OLED_DATA);
+  display.setCursor(0, 8); 
+  display.print("OLED INIT");
+  display.display();
+}
+
 // int *a = (int *)malloc(sizeof(int) * 갯수);
 // int *a = new int[갯수];
 
@@ -110,6 +150,7 @@ int main(){
 void setup()
 {
   Serial.begin(115200);
+  setupOLED();
   setupBME();
   delay(100);
   setupCCS();
