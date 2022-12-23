@@ -2,6 +2,7 @@
 #include "DFRobot_CCS811.h"
 #include <SPI.h>
 #include <Wire.h>
+#include <WiFi.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #define SEA_LEVEL_PRESSURE    1015.0f
@@ -14,12 +15,15 @@
 #define SleftEEN_ADDRESS 0x3C 
 Adafruit_SSD1306 display(SleftEEN_WIDTH, SleftEEN_HEIGHT, &Wire, OLED_RESET);
 
-#define OLED_DATA "fw ver.1.0"
+#define OLED_DATA "fw_w ver. 0.9"
 
-#define I2C_SDA 38
-#define I2C_SCL 37
-
+#define I2C_SDA 12
+#define I2C_SCL 11
 TwoWire I2Ccustom = TwoWire(0);
+
+const char* host = "esp32";
+const char* ssid = "Drimaes_AP";
+const char* password = "drimaes1303!";
 
 // elements of SEN0335
 typedef DFRobot_BME280_IIC    BME;   
@@ -27,7 +31,7 @@ typedef DFRobot_CCS811        CCS;
 BME    bme(&I2Ccustom, 0x76);   
 CCS CCS811(&I2Ccustom, 0x5A);
 
-typedef struct{
+typedef struct SENDATA{
     float temperature;
     float pressure;
     float altitude;
@@ -58,6 +62,9 @@ void setupBME(){
         delay(2000);
     }
     Serial.println("bme begin success");
+    display.clearDisplay();
+    display.print("bme begin");
+    display.display();
 }
 
 void setupCCS(){
@@ -102,6 +109,28 @@ void setupOLED(){
   display.display();
 }
 
+void setupWIFI(){
+  WiFi.begin(ssid, password);
+  Serial.println("");
+
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+
+  display.clearDisplay();
+  display.setCursor( 0,  0);
+  display.print("Connected: ");
+  display.println(ssid);
+  display.setCursor( 0,  8);
+  display.print("IP: ");
+  display.print(WiFi.localIP());
+  display.display();
+}
 // int *a = (int *)malloc(sizeof(int) * 갯수);
 // int *a = new int[갯수];
 
@@ -150,7 +179,15 @@ int main(){
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("======== start serial ========");
   setupOLED();
+  setupWIFI();
+  // I2Ccustom.begin(I2C_SDA,I2C_SCL,100000);
+  bool status = I2Ccustom.begin(I2C_SDA, I2C_SCL, 100000);
+  display.setCursor(0,16);
+  display.print(status);
+  display.display();
+  Serial.println("======== start IIC ========");
   setupBME();
   delay(100);
   setupCCS();

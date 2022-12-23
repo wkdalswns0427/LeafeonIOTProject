@@ -37,12 +37,6 @@ void setupOLED(){
   display.display();
 }
 
-void displayData(string sensor, uint8_t line){
-  display.clearDisplay();
-  for(int i = 0; i<line; i++){
-    display.setCursor(0, (i-1)*8);
-  }
-}
 
 void setup() {
   setupOLED();
