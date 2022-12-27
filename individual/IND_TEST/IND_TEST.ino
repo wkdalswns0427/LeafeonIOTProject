@@ -17,9 +17,9 @@ Adafruit_SSD1306 display(SleftEEN_WIDTH, SleftEEN_HEIGHT, &Wire, OLED_RESET);
 
 #define OLED_DATA "fw_w ver. 0.9"
 
-#define I2C_SDA 12
-#define I2C_SCL 11
-TwoWire I2Ccustom = TwoWire(0);
+#define I2C_SDA 6
+#define I2C_SCL 7
+// TwoWire I2Ccustom = TwoWire(0);
 
 const char* host = "esp32";
 const char* ssid = "Drimaes_AP";
@@ -28,8 +28,8 @@ const char* password = "drimaes1303!";
 // elements of SEN0335
 typedef DFRobot_BME280_IIC    BME;   
 typedef DFRobot_CCS811        CCS;
-BME    bme(&I2Ccustom, 0x76);   
-CCS CCS811(&I2Ccustom, 0x5A);
+BME    bme(&Wire, 0x76);   
+CCS CCS811(&Wire, 0x5A);
 
 typedef struct SENDATA{
     float temperature;
@@ -179,14 +179,10 @@ int main(){
 void setup()
 {
   Serial.begin(115200);
+  Wire.begin(I2C_SDA, I2C_SCL);
   Serial.println("======== start serial ========");
   setupOLED();
   setupWIFI();
-  // I2Ccustom.begin(I2C_SDA,I2C_SCL,100000);
-  bool status = I2Ccustom.begin(I2C_SDA, I2C_SCL, 100000);
-  display.setCursor(0,16);
-  display.print(status);
-  display.display();
   Serial.println("======== start IIC ========");
   setupBME();
   delay(100);
