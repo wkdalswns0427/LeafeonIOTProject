@@ -26,7 +26,7 @@ void setup() {
     ,  NULL
     ,  2  
     ,  NULL 
-    ,  ArduinoCore0);
+    ,  ArduinoCore1);
 
   xTaskCreatePinnedToCore(
     TaskPMS7003
@@ -35,7 +35,7 @@ void setup() {
     ,  NULL
     ,  1  // Priority
     ,  NULL 
-    ,  ArduinoCore0);
+    ,  ArduinoCore1);
 
   xTaskCreatePinnedToCore(
     TaskBME280
@@ -44,7 +44,7 @@ void setup() {
     ,  NULL
     ,  3  // Priority
     ,  NULL 
-    ,  ArduinoCore0);
+    ,  ArduinoCore1);
 
     xTaskCreatePinnedToCore(
     TaskBlink
@@ -53,7 +53,7 @@ void setup() {
     ,  NULL
     ,  0  // Priority
     ,  NULL 
-    ,  ArduinoCore0);
+    ,  ArduinoCore1);
   
 }
 
