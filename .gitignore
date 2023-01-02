@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 /.vscode
 ./ESP-IDF-demos/I2C_DACOM
+build/
