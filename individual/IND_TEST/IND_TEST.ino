@@ -1,35 +1,42 @@
 #include "DFRobot_BME280.h"
 #include "DFRobot_CCS811.h"
+#include "PMS.h"
 #include <SPI.h>
 #include <Wire.h>
 #include <WiFi.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#define SEA_LEVEL_PRESSURE    1015.0f
+#include <U8glib.h>
 
+// for wifi connection
+const char* ssid = "AP Address";        //U+Net850C
+const char* password = "**********";    //C87568BJ$F
+
+// SSD1306 driver OLED elements
+// but might need to change to SSH1106
 #define SleftEEN_WIDTH 128 // OLED display width, in pixels
-#define SleftEEN_HEIGHT 32 // OLED display height, in pixels
-
+#define SleftEEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET     -1 
-
-#define SleftEEN_ADDRESS 0x3C 
+#define SleftEEN_ADDRESS 0x78 // address might be 0x3D, 0x7A or 0x3C
 Adafruit_SSD1306 display(SleftEEN_WIDTH, SleftEEN_HEIGHT, &Wire, OLED_RESET);
+#define OLED_DATA "LeafeonPJ 0.0"
 
-#define OLED_DATA "fw_w ver. 0.9"
+//U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_NONE) ;
 
-#define I2C_SDA 6
-#define I2C_SCL 7
-// TwoWire I2Ccustom = TwoWire(0);
+#define I2C_SDA 21
+#define I2C_SCL 22
+#define TX_PIN 1
+#define RX_PIN 3
 
-const char* host = "esp32";
-const char* ssid = "Drimaes_AP";
-const char* password = "drimaes1303!";
-
-// elements of SEN0335
+// elements of SEN0335 & PMS7003
 typedef DFRobot_BME280_IIC    BME;   
 typedef DFRobot_CCS811        CCS;
 BME    bme(&Wire, 0x76);   
 CCS CCS811(&Wire, 0x5A);
+PMS pms(Serial1);
+PMS::DATA pmsdata;
+
+#define SEA_LEVEL_PRESSURE    1015.0f
 
 typedef struct SENDATA{
     float temperature;
@@ -38,6 +45,9 @@ typedef struct SENDATA{
     float humidity;
     uint16_t eCO2;
     uint16_t eTVOC;
+    float pm1_0;
+    float pm2_5;
+    float pm10_0;
 }SENDATA;
 
 uint baseline = 0;
@@ -88,6 +98,16 @@ void setupCCS(){
     }
 }
 
+void setupPMS(){
+  Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, 3, 1);
+}
+
+void setupALL(){
+  setupBME();
+  setupCCS();
+  setupPMS();
+}
+
 void setupOLED(){
   if(!display.begin(SSD1306_SWITCHCAPVCC, SleftEEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -107,6 +127,13 @@ void setupOLED(){
   display.setCursor(0, 8); 
   display.print("OLED INIT");
   display.display();
+}
+
+void setupOLED_ssh1106(){
+  //u8g.setRot180();
+  u8g.setFont(u8g_font_6x12);
+  u8g.setFontRefHeightText();
+  u8g.setFontPosTop();
 }
 
 void setupWIFI(){
@@ -131,9 +158,9 @@ void setupWIFI(){
   display.print(WiFi.localIP());
   display.display();
 }
+
 // int *a = (int *)malloc(sizeof(int) * 갯수);
 // int *a = new int[갯수];
-
 float* readBME(){
     // float data[4];
     float *data = (float*)malloc(sizeof(float)*4);
@@ -155,11 +182,29 @@ uint16_t* readCCS(){
     return data;
 }
 
+float* readPMS(){
+  float *data= (float*)malloc(sizeof(float)*3);
+  while (Serial1.available()) { Serial1.read(); }
+  pms.requestRead();
+  if (pms.readUntil(pmsdata))
+  {
+    data[0] = pmsdata.PM_AE_UG_1_0;
+    data[1] = pmsdata.PM_AE_UG_2_5;
+    data[2] = pmsdata.PM_AE_UG_10_0;
+  }
+  return data;
+}
+
 int main(){
   float* BMEdata = readBME();
-  delay(100);
   uint16_t* CCSdata = readCCS();
-  SENDATA SENRESULT = {BMEdata[0],BMEdata[1],BMEdata[2],BMEdata[3],CCSdata[0],CCSdata[1]};
+  float* PMSdata = readPMS();
+  SENDATA SENRESULT = 
+  {
+    BMEdata[0],BMEdata[1],BMEdata[2],BMEdata[3],
+    CCSdata[0],CCSdata[1],
+    PMSdata[0], PMSdata[1], PMSdata[2]
+  };
 
   Serial.println();
   Serial.println("======== start print ========");
@@ -169,6 +214,9 @@ int main(){
   Serial.print("humidity (unit percent):    "); Serial.println(SENRESULT.humidity);
   Serial.print("CO2(ppm): "); Serial.println(SENRESULT.eCO2);
   Serial.print("TVOC(ppb): "); Serial.println(SENRESULT.eTVOC);
+  Serial.print("PM 1.0 (ug/m3): "); Serial.println(SENRESULT.pm1_0);
+  Serial.print("PM 2.5 (ug/m3): "); Serial.println(SENRESULT.pm2_5);
+  Serial.print("PM 10.0 (ug/m3): "); Serial.println(SENRESULT.pm10_0);
   Serial.println("========  end print  ========");
 
   CCS811.writeBaseLine(baseline);
@@ -184,9 +232,7 @@ void setup()
   setupOLED();
   setupWIFI();
   Serial.println("======== start IIC ========");
-  setupBME();
-  delay(100);
-  setupCCS();
+  setupALL();
   Serial.println("======== Setup Done ========");
 }
 
