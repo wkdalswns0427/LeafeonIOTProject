@@ -1,3 +1,8 @@
+// This is prototype ESP32-LEAFEON project Arduino version 
+// refer to this link
+//https://github.com/olikraus/u8glib/wiki/userreference#setcolorindex
+// in case of ssh1106 graphic driver
+
 #include "DFRobot_BME280.h"
 #include "DFRobot_CCS811.h"
 #include "PMS.h"
@@ -10,18 +15,18 @@
 
 // for wifi connection
 const char* ssid = "AP Address";        //U+Net850C
-const char* password = "**********";    //C87568BJ$F
+const char* password = "**********";    //C87568BJ$F//12345678///csdowu38
 
 // SSD1306 driver OLED elements
-// but might need to change to SSH1106
+// but might need to change to SSH1106 in that case... either
+//U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_NONE) ; // or U8G_I2C_OPT_NO_ACK
+
 #define SleftEEN_WIDTH 128 // OLED display width, in pixels
 #define SleftEEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET     -1 
-#define SleftEEN_ADDRESS 0x78 // address might be 0x3D, 0x7A or 0x3C
+#define SleftEEN_ADDRESS 0x3C // address might be 0x3D, 0x7A or 0x3C
 Adafruit_SSD1306 display(SleftEEN_WIDTH, SleftEEN_HEIGHT, &Wire, OLED_RESET);
 #define OLED_DATA "LeafeonPJ 0.0"
-
-//U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_NONE) ;
 
 #define I2C_SDA 21
 #define I2C_SCL 22
@@ -134,6 +139,16 @@ void setupOLED_ssh1106(){
   u8g.setFont(u8g_font_6x12);
   u8g.setFontRefHeightText();
   u8g.setFontPosTop();
+
+  if ( u8g.getMode() == U8G_MODE_R3G3B2 ) {
+    u8g.setColorIndex(255); // white
+  }
+
+  // test display
+  do{
+    // drawStr(uint8_t x, uint8_t y, string msg)
+    u8g.drawStr(0, 22, "OLED INIT")  
+  }while(u8g.nextPage());
 }
 
 void setupWIFI(){
@@ -234,6 +249,17 @@ void setup()
   Serial.println("======== start IIC ========");
   setupALL();
   Serial.println("======== Setup Done ========");
+
+  // task attribute --> main : sensors
+  xTaskCreate(
+    main,
+    "main",
+    1024,
+    NULL,
+    1,
+    NULL
+  );
+  // need task for OTA
 }
 
 void loop()
