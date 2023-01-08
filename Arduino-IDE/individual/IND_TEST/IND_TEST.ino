@@ -19,7 +19,7 @@ const char* password = "**********";    //C87568BJ$F//12345678///csdowu38
 
 // SSD1306 driver OLED elements
 // but might need to change to SSH1106 in that case... either
-//U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_NONE) ; // or U8G_I2C_OPT_NO_ACK
+U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_NONE) ; // or U8G_I2C_OPT_NO_ACK
 
 #define SleftEEN_WIDTH 128 // OLED display width, in pixels
 #define SleftEEN_HEIGHT 64 // OLED display height, in pixels
@@ -147,7 +147,7 @@ void setupOLED_ssh1106(){
   // test display
   do{
     // drawStr(uint8_t x, uint8_t y, string msg)
-    u8g.drawStr(0, 22, "OLED INIT")  
+    u8g.drawStr(0, 22, "OLED INIT")  ;
   }while(u8g.nextPage());
 }
 
@@ -244,21 +244,21 @@ void setup()
   Serial.begin(115200);
   Wire.begin(I2C_SDA, I2C_SCL);
   Serial.println("======== start serial ========");
-  setupOLED();
+  // setupOLED();
   setupWIFI();
   Serial.println("======== start IIC ========");
   setupALL();
   Serial.println("======== Setup Done ========");
 
-  // task attribute --> main : sensors
-  xTaskCreate(
-    main,
-    "main",
-    1024,
-    NULL,
-    1,
-    NULL
-  );
+  // // task attribute --> main : sensors
+  // xTaskCreate(
+  //   main,
+  //   "main",
+  //   1024,
+  //   NULL,
+  //   1,
+  //   NULL
+  // );
   // need task for OTA
 }
 

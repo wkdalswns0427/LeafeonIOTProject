@@ -26,4 +26,5 @@ void loop()
       Serial.println(data.PM_AE_UG_10_0);
 
   }
+  Serial.print("sequence\n");
 }
