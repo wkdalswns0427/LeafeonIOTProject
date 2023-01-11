@@ -1,7 +1,15 @@
+#include "WiFi.h"
+#include "time.h"
 #include "DFRobot_BME280.h"
 #include "DFRobot_CCS811.h"
 #include "PMS.h"
 #define SEA_LEVEL_PRESSURE    1015.0f
+
+const char* ssid       = "YOUR_SSID";
+const char* password   = "YOUR_PASS";
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 3600;
+const int   daylightOffset_sec = 3600;
 
 // elements of SEN0335 : I2C
 typedef DFRobot_BME280_IIC    BME;   
@@ -27,6 +35,15 @@ typedef struct{
 }SENDATA;
 
 uint baseline = 0;
+
+void printLocalTime() {
+    struct tm timeinfo;
+    if(!getLocalTime(&timeinfo)) {
+        Serial.println("Failed to obtain time");
+        return;
+    }
+    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+}
 
 // show last sensor operate status
 void printLastOperateStatus(BME::eStatus_t eStatus)
@@ -137,13 +154,24 @@ void setup()
 {
   Serial.println("======== Begin Leafeon ========");
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, 3, 1);
-  Serial.println("======== Setup UART Done ========");
   Serial.begin(9600);
+  Serial.println("======== Setup UART Done ========");
   setupBME();
   setupCCS();
   Serial.println("======== Setup I2C Done ========");
   delay(100);
   Serial.println("======== Setup ALL Done ========");
+  
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+  }
+  Serial.println(" CONNECTED");
+     
+  // init and get the time
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
 }
 
 void loop()
