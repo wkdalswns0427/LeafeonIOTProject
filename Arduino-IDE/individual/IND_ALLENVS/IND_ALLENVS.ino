@@ -3,15 +3,17 @@
 #include "PMS.h"
 #define SEA_LEVEL_PRESSURE    1015.0f
 
-// elements of SEN0335
+// elements of SEN0335 : I2C
 typedef DFRobot_BME280_IIC    BME;   
 typedef DFRobot_CCS811        CCS;
 BME    bme(&Wire, 0x76);   
 CCS CCS811(&Wire, 0x5A);
 
+// PMS7003 sensor : UART - using Serial1
 PMS pms(Serial1);
 PMS::DATA pmsdata;
 
+// data cluster
 typedef struct{
     float temperature;
     float pressure;
@@ -57,10 +59,6 @@ void setupCCS(){
     delay(1000);
     Serial.println("ccs set baseline");
     if(CCS811.checkDataReady() == true){
-        /*!
-         * @brief Set baseline
-         * @return baseline in clear air
-         */
         baseline = CCS811.readBaseLine();
         Serial.println(baseline, HEX);
         
@@ -73,8 +71,8 @@ void setupCCS(){
 // int *a = new int[갯수];
 
 float* readBME(){
-    // float data[4];
     float *data = (float*)malloc(sizeof(float)*4);
+    
     data[0] = bme.getTemperature();
     data[1] = bme.getPressure();
     data[2] = bme.calAltitude(SEA_LEVEL_PRESSURE, data[1]);
@@ -85,6 +83,7 @@ float* readBME(){
 
 uint16_t* readCCS(){
     uint16_t *data = (uint16_t*)malloc(sizeof(uint16_t)*2);
+    
     if(CCS811.checkDataReady() == true){
         data[0] = CCS811.getCO2PPM();
         data[1] = CCS811.getTVOCPPB();
@@ -95,11 +94,10 @@ uint16_t* readCCS(){
 
 uint16_t *readPMS(){
   uint16_t *data = (uint16_t*)malloc(sizeof(uint16_t)*3);
+    
   while (Serial1.available()) { Serial1.read(); }
   pms.requestRead();
-  if (pms.readUntil(pmsdata))
-  {
-
+  if (pms.readUntil(pmsdata)){
       data[0] = pmsdata.PM_AE_UG_1_0;
       data[1] = pmsdata.PM_AE_UG_2_5;
       data[2] = pmsdata.PM_AE_UG_1_0;
@@ -107,6 +105,7 @@ uint16_t *readPMS(){
   return data;
 }
 
+// main function
 int main(){
   float* BMEdata = readBME();
   uint16_t* CCSdata = readCCS();
