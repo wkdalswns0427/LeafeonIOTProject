@@ -1,3 +1,4 @@
+// #include <Arduino.h>
 #include "WiFi.h"
 #include "time.h"
 #include "DFRobot_BME280.h"
@@ -8,8 +9,8 @@
 const char* ssid       = "YOUR_SSID";
 const char* password   = "YOUR_PASS";
 const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 3600;
-const int   daylightOffset_sec = 3600;
+const long  gmtOffset_sec = 32400;
+const int   daylightOffset_sec = 0;
 
 // elements of SEN0335 : I2C
 typedef DFRobot_BME280_IIC    BME;   
