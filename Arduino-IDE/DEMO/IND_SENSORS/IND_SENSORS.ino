@@ -6,8 +6,8 @@
 #include "PMS.h"
 #define SEA_LEVEL_PRESSURE    1015.0f
 
-const char* ssid       = "YOUR_SSID";
-const char* password   = "YOUR_PASS";
+const char* ssid = "AP Address";        //U+Net850C
+const char* password = "**********";    //C87568BJ$F//12345678///csdowu38
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
