@@ -1,6 +1,0 @@
-source "C:/Users/master/esp/esp-idf/components/app_update/Kconfig.projbuild"
-source "C:/Users/master/esp/esp-idf/components/bootloader/Kconfig.projbuild"
-source "C:/Users/master/esp/esp-idf/components/esp_rom/Kconfig.projbuild"
-source "C:/Users/master/esp/esp-idf/components/esptool_py/Kconfig.projbuild"
-source "C:/Users/master/esp/esp-idf/components/partition_table/Kconfig.projbuild"
-source "C:/Users/master/Desktop/Everything/ESPIDF_EX/SSD1306-demo/components/ssd1306/Kconfig.projbuild"
