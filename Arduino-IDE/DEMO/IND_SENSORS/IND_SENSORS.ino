@@ -6,6 +6,11 @@
 #include "PMS.h"
 #define SEA_LEVEL_PRESSURE    1015.0f
 
+#define SDA_PIN 21
+#define SCL_PIN 22
+#define TX_PIN 1
+#define RX_PIN 3
+
 const char* ssid = "AP Address";        //U+Net850C
 const char* password = "**********";    //C87568BJ$F//12345678///csdowu38
 const char* ntpServer = "pool.ntp.org";
@@ -18,8 +23,8 @@ typedef DFRobot_CCS811        CCS;
 BME    bme(&Wire, 0x76);   
 CCS CCS811(&Wire, 0x5A);
 
-// PMS7003 sensor : UART - using Serial1
-PMS pms(Serial1);
+// PMS7003 sensor : UART - using PMSSerial
+PMS pms(PMSSerial);
 PMS::DATA pmsdata;
 
 // data cluster
@@ -113,7 +118,7 @@ uint16_t* readCCS(){
 uint16_t *readPMS(){
   uint16_t *data = (uint16_t*)malloc(sizeof(uint16_t)*3);
     
-  while (Serial1.available()) { Serial1.read(); }
+  while (PMSSerial.available()) { PMSSerial.read(); }
   pms.requestRead();
   if (pms.readUntil(pmsdata)){
       data[0] = pmsdata.PM_AE_UG_1_0;
@@ -133,6 +138,8 @@ int main(){
           ,CCSdata[0], CCSdata[1]
           ,PMSdata[0], PMSdata[1], PMSdata[2]};
 
+
+  //================= this part shall be either posting or OLED =================
   Serial.println();
   Serial.println("======== start print ========");
   Serial.print("temperature (unit Celsius): "); Serial.println(SENRESULT.temperature);
@@ -145,6 +152,7 @@ int main(){
   Serial.print("PM 2.5 (ug/m3): "); Serial.println(SENRESULT.PM_AE_UG_2_5);
   Serial.print("PM 10.0 (ug/m3): "); Serial.println(SENRESULT.PM_AE_UG_10_0);
   Serial.println("========  end print  ========");
+  //==============================================================================
 
   CCS811.writeBaseLine(baseline);
   delay(900);
@@ -154,7 +162,7 @@ int main(){
 void setup()
 {
   Serial.println("======== Begin Leafeon ========");
-  Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, 3, 1);
+  PMSSerial.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(9600);
   Serial.println("======== Setup UART Done ========");
   setupBME();
