@@ -1,36 +1,37 @@
-#include <SPI.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SH1106.h>
+// #include <SPI.h>
+// #include <Wire.h>
+// #include <Adafruit_GFX.h>
+// #include "Adafruit_SH1106.h"
 
-#define OLED_SDA 21
-#define OLED_SCL 22
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+// #define OLED_SDA 21
+// #define OLED_SCL 22
+// #define SCREEN_WIDTH 128
+// #define SCREEN_HEIGHT 64
 
-Adafruit_SH1106 display(OLED_SCL, OLED_SDA); // display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+// Adafruit_SH1106 display(OLED_SCL, OLED_SDA); // display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-void setup()   {                
-  Serial.begin(115200);
-  /* initialize OLED with I2C address 0x7A, 0x78, or 0x3C */
-  display.begin(SH1106_SWITCHCAPVCC, 0x7A); 
-  display.clearDisplay();
+// void setup()   {                
+//   Serial.begin(115200);
+//   /* initialize OLED with I2C address 0x7A, 0x78, or 0x3C */
+//   display.begin(SH1106_SWITCHCAPVCC, 0x3C); 
+//   display.clearDisplay();
+//   Serial.println("");
 
-}
-void loop() { 
-  /* set text size, color, cursor position, 
-  set buffer with  Hello world and show off*/
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.println("Hello, world!");
-  display.display();
-  delay(2000);
-  display.clearDisplay();
-}
+// }
+// void loop() { 
+//   /* set text size, color, cursor position, 
+//   set buffer with  Hello world and show off*/
+//   display.setTextSize(2);
+//   display.setTextColor(WHITE);
+//   display.setCursor(0,0);
+//   display.println("Hello, world!");
+//   display.display();
+//   delay(2000);
+//   display.clearDisplay();
+// }
 
-/*
+
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -176,4 +177,3 @@ void setup()
   display.clearDisplay();
 }
 void loop() {}
-*/
