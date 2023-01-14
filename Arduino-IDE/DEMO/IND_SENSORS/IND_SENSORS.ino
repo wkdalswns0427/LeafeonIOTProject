@@ -4,15 +4,20 @@
 #include "DFRobot_BME280.h"
 #include "DFRobot_CCS811.h"
 #include "PMS.h"
-#define SEA_LEVEL_PRESSURE    1015.0f
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 #define SDA_PIN 21
 #define SCL_PIN 22
 #define TX_PIN 1
 #define RX_PIN 3
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET     -1
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-const char* ssid = "AP Address";        //U+Net850C
-const char* password = "**********";    //C87568BJ$F//12345678///csdowu38
+const char* ssid = "Roboin";        //U+Net850C
+const char* password = "roboin1234";    //C87568BJ$F//12345678///csdowu38
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
@@ -22,13 +27,14 @@ typedef DFRobot_BME280_IIC    BME;
 typedef DFRobot_CCS811        CCS;
 BME    bme(&Wire, 0x76);   
 CCS CCS811(&Wire, 0x5A);
+#define SEA_LEVEL_PRESSURE    1015.0f
 
 // PMS7003 sensor : UART - using PMSSerial
-PMS pms(PMSSerial);
+PMS pms(Serial1);
 PMS::DATA pmsdata;
 
 // data cluster
-typedef struct{
+typedef struct SENDATA{
     float temperature;
     float pressure;
     float altitude;
@@ -48,7 +54,24 @@ void printLocalTime() {
         Serial.println("Failed to obtain time");
         return;
     }
-    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+    // Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+    display.println(&timeinfo, "%H:%M:%S");
+}
+
+void displayInitialTime(){
+    struct tm timeinfo;
+    if(!getLocalTime(&timeinfo)) {
+        Serial.println("Failed to obtain time");
+        return;
+    }
+
+    display.clearDisplay();
+    display.setCursor(0, 24);
+    display.setTextSize(1);
+    display.println(&timeinfo, "%A, %B %d");
+    display.println(&timeinfo, "%H:%M:%S");
+    display.display();
+    delay(3000);
 }
 
 // show last sensor operate status
@@ -90,10 +113,39 @@ void setupCCS(){
     }
 }
 
-// int *a = (int *)malloc(sizeof(int) * 갯수);
-// int *a = new int[갯수];
+void setupOLED(){
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+        Serial.println(F("SSD1306 allocation failed"));
+        for (;;); // Don't proceed, loop forever
+    }
+    display.clearDisplay();
 
-float* readBME(){
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(4, 28);
+    display.println("** Begin Leafeon **");
+    display.display();
+    delay(2000);
+}
+
+void setupWiFi(){
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+    }
+    resetDisplay();
+    display.println("WIFI CONNECTED");
+    display.print("IP :"); display.println(WiFi.localIP());
+    delay(2000);
+}
+
+void resetDisplay(){
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.setTextSize(1);
+}
+
+float *readBME(){
     float *data = (float*)malloc(sizeof(float)*4);
     
     data[0] = bme.getTemperature();
@@ -104,21 +156,20 @@ float* readBME(){
     return data;
 }
 
-uint16_t* readCCS(){
+uint16_t *readCCS(){
     uint16_t *data = (uint16_t*)malloc(sizeof(uint16_t)*2);
     
     if(CCS811.checkDataReady() == true){
         data[0] = CCS811.getCO2PPM();
         data[1] = CCS811.getTVOCPPB();
     }
-
     return data;
 }
 
 uint16_t *readPMS(){
   uint16_t *data = (uint16_t*)malloc(sizeof(uint16_t)*3);
     
-  while (PMSSerial.available()) { PMSSerial.read(); }
+  while (Serial1.available()) { Serial1.read(); }
   pms.requestRead();
   if (pms.readUntil(pmsdata)){
       data[0] = pmsdata.PM_AE_UG_1_0;
@@ -138,54 +189,46 @@ int main(){
           ,CCSdata[0], CCSdata[1]
           ,PMSdata[0], PMSdata[1], PMSdata[2]};
 
-
   //================= this part shall be either posting or OLED =================
-  Serial.println();
-  Serial.println("======== start print ========");
-  Serial.print("temperature (unit Celsius): "); Serial.println(SENRESULT.temperature);
-  Serial.print("pressure (unit pa):         "); Serial.println(SENRESULT.pressure);
-  Serial.print("altitude (unit meter):      "); Serial.println(SENRESULT.altitude);
-  Serial.print("humidity (unit percent):    "); Serial.println(SENRESULT.humidity);
-  Serial.print("CO2(ppm): "); Serial.println(SENRESULT.eCO2);
-  Serial.print("TVOC(ppb): "); Serial.println(SENRESULT.eTVOC);
-  Serial.print("PM 1.0 (ug/m3): "); Serial.println(SENRESULT.PM_AE_UG_1_0);
-  Serial.print("PM 2.5 (ug/m3): "); Serial.println(SENRESULT.PM_AE_UG_2_5);
-  Serial.print("PM 10.0 (ug/m3): "); Serial.println(SENRESULT.PM_AE_UG_10_0);
-  Serial.println("========  end print  ========");
+  resetDisplay();
+  printLocalTime();
+  display.print("temp(C): "); display.println(SENRESULT.temperature);
+  display.print("P(Pa): "); display.println(SENRESULT.pressure);
+//   display.print("alt(m):  "); display.println(SENRESULT.altitude);
+  display.print("hum(%): "); display.println(SENRESULT.humidity);
+  display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
+  display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
+  display.display();
+  delay(5000);
+  
+  resetDisplay();
+  display.println("micro particle(ug/m3)");
+  display.print("PM 1.0: "); display.println(SENRESULT.PM_AE_UG_1_0);
+  display.print("PM 2.5: "); display.println(SENRESULT.PM_AE_UG_2_5);
+  display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
+  display.display();
+  delay(5000);
   //==============================================================================
 
   CCS811.writeBaseLine(baseline);
-  delay(900);
   return 0;
 }
 
 void setup()
 {
-  Serial.println("======== Begin Leafeon ========");
-  PMSSerial.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
+  Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(9600);
-  Serial.println("======== Setup UART Done ========");
   setupBME();
   setupCCS();
-  Serial.println("======== Setup I2C Done ========");
-  delay(100);
-  Serial.println("======== Setup ALL Done ========");
+  setupOLED();
+  setupWiFi();
   
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-  }
-  Serial.println(" CONNECTED");
-     
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  printLocalTime();
+  displayInitialTime();
 }
 
 void loop()
 {
     main();
-    delay(1000);
-    Serial.println("======== loop ========");
 }
