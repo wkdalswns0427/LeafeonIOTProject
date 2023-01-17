@@ -367,8 +367,18 @@ void setup()
         NULL,
         RUNNING_CORE
     );
+
+    xTaskCreatePinnedToCore(
+        server.handleClient(),
+        "server",
+        1024,
+        NULL, // task function input
+        1,
+        NULL,
+        RUNNING_CORE
+    );
 }
 
 void loop(){
-    server.handleClient();
+    // server.handleClient();
 }
