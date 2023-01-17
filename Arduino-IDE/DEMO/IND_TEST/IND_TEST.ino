@@ -1,4 +1,6 @@
-// #include <Arduino.h>
+// ota source
+// https://lastminuteengineers.com/esp32-ota-web-updater-arduino-ide/
+#include <Arduino.h>
 #include "WiFi.h"
 #include "time.h"
 #include "DFRobot_BME280.h"
@@ -310,36 +312,36 @@ void sensortask( void *pvParameters){
 
   (void) pvParameters;
     while(true){
-    float* BMEdata = readBME();
-    uint16_t* CCSdata = readCCS();
-    uint16_t* PMSdata = readPMS();
-    SENDATA SENRESULT = 
-            {BMEdata[0], BMEdata[1], BMEdata[2], BMEdata[3]
-            ,CCSdata[0], CCSdata[1]
-            ,PMSdata[0], PMSdata[1], PMSdata[2]};
+        float* BMEdata = readBME();
+        uint16_t* CCSdata = readCCS();
+        uint16_t* PMSdata = readPMS();
+        SENDATA SENRESULT = 
+                {BMEdata[0], BMEdata[1], BMEdata[2], BMEdata[3]
+                ,CCSdata[0], CCSdata[1]
+                ,PMSdata[0], PMSdata[1], PMSdata[2]};
 
-    //================= this part shall be either posting or OLED =================
-    resetDisplay();
-    printLocalTime();
-    display.print("temp(C): "); display.println(SENRESULT.temperature);
-    display.print("P(Pa): "); display.println(SENRESULT.pressure);
-    //   display.print("alt(m):  "); display.println(SENRESULT.altitude);
-    display.print("hum(%): "); display.println(SENRESULT.humidity);
-    display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
-    display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
-    display.display();
-    delay(5000);
-    
-    resetDisplay();
-    display.println("micro particle(ug/m3)");
-    display.print("PM 1.0: "); display.println(SENRESULT.PM_AE_UG_1_0);
-    display.print("PM 2.5: "); display.println(SENRESULT.PM_AE_UG_2_5);
-    display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
-    display.display();
-    delay(5000);
-    //==============================================================================
+        //================= this part shall be either posting or OLED =================
+        resetDisplay();
+        printLocalTime();
+        display.print("temp(C): "); display.println(SENRESULT.temperature);
+        display.print("P(Pa): "); display.println(SENRESULT.pressure);
+        //   display.print("alt(m):  "); display.println(SENRESULT.altitude);
+        display.print("hum(%): "); display.println(SENRESULT.humidity);
+        display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
+        display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
+        display.display();
+        delay(5000);
+        
+        resetDisplay();
+        display.println("micro particle(ug/m3)");
+        display.print("PM 1.0: "); display.println(SENRESULT.PM_AE_UG_1_0);
+        display.print("PM 2.5: "); display.println(SENRESULT.PM_AE_UG_2_5);
+        display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
+        display.display();
+        delay(5000);
+        //==============================================================================
 
-    CCS811.writeBaseLine(baseline);
+        CCS811.writeBaseLine(baseline);
     }
 }
 
