@@ -25,8 +25,8 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const char* host = "esp32";
-const char* ssid = "Roboin";        //U+Net850C
-const char* password = "roboin1234";    //C87568BJ$F//12345678///csdowu38
+const char* ssid = "Drimaes_AP";        //U+Net850C
+const char* password = "drimaes1303!";    //C87568BJ$F//12345678///csdowu38
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
@@ -138,6 +138,12 @@ void printLocalTime() {
     }
     // Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
     display.println(&timeinfo, "%H:%M:%S");
+}
+
+void resetDisplay(){
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.setTextSize(1);
 }
 
 void displayInitialTime(){
@@ -267,12 +273,6 @@ void setupWebServer(){
     server.begin();
 }
 
-void resetDisplay(){
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.setTextSize(1);
-}
-
 float *readBME(){
     float *data = (float*)malloc(sizeof(float)*4);
     
@@ -308,7 +308,7 @@ uint16_t *readPMS(){
 }
 
 // main function
-void sensortask( void *pvParameters){
+void sensorTask( void *pvParameters){
 
   (void) pvParameters;
     while(true){
@@ -345,6 +345,13 @@ void sensortask( void *pvParameters){
     }
 }
 
+void serverTask(void *pvParameters){
+    (void) pvParameters;
+    while(true){
+        server.handleClient();
+    }
+}
+
 void setup()
 {
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
@@ -353,14 +360,15 @@ void setup()
   setupCCS();
   setupOLED();
   setupWiFi();
+  Serial.println(WiFi.localIP());
   
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   displayInitialTime();
 
   xTaskCreatePinnedToCore(
-        sensortask,
-        "sensortask",
+        sensorTask,
+        "sensorTask",
         4096,
         NULL, // task function input
         1,
@@ -369,13 +377,13 @@ void setup()
     );
 
     xTaskCreatePinnedToCore(
-        server.handleClient(),
-        "server",
+        serverTask,
+        "serverTask",
         1024,
         NULL, // task function input
         1,
         NULL,
-        RUNNING_CORE
+        0
     );
 }
 
