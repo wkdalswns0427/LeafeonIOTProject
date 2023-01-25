@@ -15,6 +15,7 @@
 #include <Update.h>
 
 #define RUNNING_CORE 1
+#define BASE_CORE 0
 #define SDA_PIN 21
 #define SCL_PIN 22
 #define TX_PIN 1
@@ -25,8 +26,8 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const char* host = "esp32";
-const char* ssid = "Drimaes_AP";        //U+Net850C
-const char* password = "drimaes1303!";    //C87568BJ$F//12345678///csdowu38
+const char* ssid = "*********";        //U+Net850C
+const char* password = "********";    //C87568BJ$F//12345678///csdowu38
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
@@ -69,66 +70,88 @@ String style =
 "form{background:#fff;max-width:258px;margin:75px auto;padding:30px;border-radius:5px;text-align:center}"
 ".btn{background:#3498db;color:#fff;cursor:pointer}</style>";
 
-/* Login page */
-String loginIndex = 
-"<form name=loginForm>"
-"<h1>ESP32 Login</h1>"
-"<input name=userid placeholder='User ID'> "
-"<input name=pwd placeholder=Password type=Password> "
-"<input type=submit onclick=check(this.form) class=btn value=Login></form>"
+const char* loginIndex =
+ "<form name='loginForm'>"
+    "<table width='20%' bgcolor='A09F9F' align='center'>"
+        "<tr>"
+            "<td colspan=2>"
+                "<center><font size=4><b>ESP32 Login Page</b></font></center>"
+                "<br>"
+            "</td>"
+            "<br>"
+            "<br>"
+        "</tr>"
+        "<tr>"
+             "<td>Username:</td>"
+             "<td><input type='text' size=25 name='userid'><br></td>"
+        "</tr>"
+        "<br>"
+        "<br>"
+        "<tr>"
+            "<td>Password:</td>"
+            "<td><input type='Password' size=25 name='pwd'><br></td>"
+            "<br>"
+            "<br>"
+        "</tr>"
+        "<tr>"
+            "<td><input type='submit' onclick='check(this.form)' value='Login'></td>"
+        "</tr>"
+    "</table>"
+"</form>"
 "<script>"
-"function check(form) {"
-"if(form.userid.value=='admin' && form.pwd.value=='admin')"
-"{window.open('/serverIndex')}"
-"else"
-"{alert('Error Password or Username')}"
-"}"
-"</script>" + style;
- 
-/* Server Index Page */
-String serverIndex = 
+    "function check(form)"
+    "{"
+    "if(form.userid.value=='admin' && form.pwd.value=='admin')"
+    "{"
+    "window.open('/serverIndex')"
+    "}"
+    "else"
+    "{"
+    " alert('Error Password or Username')/*displays error message*/"
+    "}"
+    "}"
+"</script>";
+
+/*
+ * Server Index Page
+ */
+
+const char* serverIndex =
 "<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>"
 "<form method='POST' action='#' enctype='multipart/form-data' id='upload_form'>"
-"<input type='file' name='update' id='file' onchange='sub(this)' style=display:none>"
-"<label id='file-input' for='file'>   Choose file...</label>"
-"<input type='submit' class=btn value='Update'>"
-"<br><br>"
-"<div id='prg'></div>"
-"<br><div id='prgbar'><div id='bar'></div></div><br></form>"
-"<script>"
-"function sub(obj){"
-"var fileName = obj.value.split('\\\\');"
-"document.getElementById('file-input').innerHTML = '   '+ fileName[fileName.length-1];"
-"};"
-"$('form').submit(function(e){"
-"e.preventDefault();"
-"var form = $('#upload_form')[0];"
-"var data = new FormData(form);"
-"$.ajax({"
-"url: '/update',"
-"type: 'POST',"
-"data: data,"
-"contentType: false,"
-"processData:false,"
-"xhr: function() {"
-"var xhr = new window.XMLHttpRequest();"
-"xhr.upload.addEventListener('progress', function(evt) {"
-"if (evt.lengthComputable) {"
-"var per = evt.loaded / evt.total;"
-"$('#prg').html('progress: ' + Math.round(per*100) + '%');"
-"$('#bar').css('width',Math.round(per*100) + '%');"
-"}"
-"}, false);"
-"return xhr;"
-"},"
-"success:function(d, s) {"
-"console.log('success!') "
-"},"
-"error: function (a, b, c) {"
-"}"
-"});"
-"});"
-"</script>" + style;
+   "<input type='file' name='update'>"
+        "<input type='submit' value='Update'>"
+    "</form>"
+ "<div id='prg'>progress: 0%</div>"
+ "<script>"
+  "$('form').submit(function(e){"
+  "e.preventDefault();"
+  "var form = $('#upload_form')[0];"
+  "var data = new FormData(form);"
+  " $.ajax({"
+  "url: '/update',"
+  "type: 'POST',"
+  "data: data,"
+  "contentType: false,"
+  "processData:false,"
+  "xhr: function() {"
+  "var xhr = new window.XMLHttpRequest();"
+  "xhr.upload.addEventListener('progress', function(evt) {"
+  "if (evt.lengthComputable) {"
+  "var per = evt.loaded / evt.total;"
+  "$('#prg').html('progress: ' + Math.round(per*100) + '%');"
+  "}"
+  "}, false);"
+  "return xhr;"
+  "},"
+  "success:function(d, s) {"
+  "console.log('success!')"
+ "},"
+ "error: function (a, b, c) {"
+ "}"
+ "});"
+ "});"
+ "</script>";
 
 void printLocalTime() {
     struct tm timeinfo;
@@ -153,12 +176,14 @@ void displayInitialTime(){
         return;
     }
 
-    display.clearDisplay();
-    display.setCursor(0, 24);
-    display.setTextSize(1);
-    display.println(&timeinfo, "%A, %B %d");
-    display.println(&timeinfo, "%H:%M:%S");
-    display.display();
+    // display.clearDisplay();
+    // display.setCursor(0, 24);
+    // display.setTextSize(1);
+    // display.println(&timeinfo, "%A, %B %d");
+    // display.println(&timeinfo, "%H:%M:%S");
+    // display.display();
+    Serial.println(&timeinfo, "%A, %B %d");
+    Serial.println(&timeinfo, "%H:%M:%S");
     delay(3000);
 }
 
@@ -168,7 +193,7 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
   switch(eStatus) {
   case BME::eStatusOK:    Serial.println("everything ok"); break;
   case BME::eStatusErr:   Serial.println("unknow error"); break;
-  case BME::eStatusErrDeviceNotDetected:    Serial.println("device not detected"); break;
+  case BME::eStatusErrDeviceNotDetected:    /*Serial.println("device not detected");*/ break;
   case BME::eStatusErrParameter:    Serial.println("parameter error"); break;
   default: Serial.println("unknow status"); break;
   }
@@ -177,7 +202,7 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
 void setupBME(){
     Serial.println("bme read data test");
     while(bme.begin() != BME::eStatusOK) {
-        Serial.println("bme begin faild");
+        // Serial.println("bme begin faild");
         printLastOperateStatus(bme.lastOperateStatus);
         delay(2000);
     }
@@ -186,12 +211,12 @@ void setupBME(){
 
 void setupCCS(){
     while(CCS811.begin() != 0){
-            Serial.println("failed to init chip, please check if the chip connection is fine");
+            // Serial.println("failed to init chip, please check if the chip connection is fine");
             delay(1000);
         }
     Serial.println("ccs begin success");
     delay(1000);
-    Serial.println("ccs set baseline");
+    // Serial.println("ccs set baseline");
     if(CCS811.checkDataReady() == true){
         baseline = CCS811.readBaseLine();
         Serial.println(baseline, HEX);
@@ -218,13 +243,18 @@ void setupOLED(){
 
 void setupWiFi(){
     WiFi.begin(ssid, password);
+    Serial.println("");
+
+    // Wait for connection
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
+        Serial.print(".");
     }
-    resetDisplay();
-    display.println("WIFI CONNECTED");
-    display.print("IP :"); display.println(WiFi.localIP());
-    delay(2000);
+    Serial.println("");
+    Serial.print("Connected to ");
+    Serial.println(ssid);
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
 }
 
 void setupWebServer(){
@@ -330,7 +360,7 @@ void sensorTask( void *pvParameters){
         display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
         display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
         display.display();
-        delay(5000);
+        delay(3000);
         
         resetDisplay();
         display.println("micro particle(ug/m3)");
@@ -338,7 +368,7 @@ void sensorTask( void *pvParameters){
         display.print("PM 2.5: "); display.println(SENRESULT.PM_AE_UG_2_5);
         display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
         display.display();
-        delay(5000);
+        delay(3000);
         //==============================================================================
 
         CCS811.writeBaseLine(baseline);
@@ -354,19 +384,24 @@ void serverTask(void *pvParameters){
 
 void setup()
 {
+  //==============================================================================
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.print("begin");
+  delay(1000);
+  setupWiFi();
+  setupWebServer();
   setupBME();
   setupCCS();
   setupOLED();
-  setupWiFi();
+  //==============================================================================
   Serial.println(WiFi.localIP());
   
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   displayInitialTime();
 
-  xTaskCreatePinnedToCore(
+    xTaskCreatePinnedToCore(
         sensorTask,
         "sensorTask",
         4096,
@@ -376,17 +411,17 @@ void setup()
         RUNNING_CORE
     );
 
-    xTaskCreatePinnedToCore(
-        serverTask,
-        "serverTask",
-        1024,
-        NULL, // task function input
-        1,
-        NULL,
-        0
-    );
+    // xTaskCreatePinnedToCore(
+    //     serverTask,
+    //     "serverTask",
+    //     1024,
+    //     NULL, // task function input
+    //     1,
+    //     NULL,
+    //     BASE_CORE
+    // );
 }
 
 void loop(){
-    // server.handleClient();
+    server.handleClient();
 }
