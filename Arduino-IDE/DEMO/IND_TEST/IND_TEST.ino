@@ -172,14 +172,14 @@ void displayInitialTime(){
         return;
     }
 
-    // display.clearDisplay();
-    // display.setCursor(0, 24);
-    // display.setTextSize(1);
-    // display.println(&timeinfo, "%A, %B %d");
-    // display.println(&timeinfo, "%H:%M:%S");
-    // display.display();
-    Serial.println(&timeinfo, "%A, %B %d");
-    Serial.println(&timeinfo, "%H:%M:%S");
+    display.clearDisplay();
+    display.setCursor(0, 24);
+    display.setTextSize(1);
+    display.println(&timeinfo, "%A, %B %d");
+    display.println(&timeinfo, "%H:%M:%S");
+    display.display();
+    // Serial.println(&timeinfo, "%A, %B %d");
+    // Serial.println(&timeinfo, "%H:%M:%S");
     delay(3000);
 }
 
@@ -406,19 +406,9 @@ void setup()
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   displayInitialTime();
 
-    xTaskCreatePinnedToCore(
-        dummyTask,
-        "dummyTask",
-        4096,
-        NULL, // task function input
-        1,
-        &Task1,
-        RUNNING_CORE
-    );
-
     // xTaskCreatePinnedToCore(
-    //     sensorTask,
-    //     "sensorTask",
+    //     dummyTask,
+    //     "dummyTask",
     //     4096,
     //     NULL, // task function input
     //     1,
@@ -427,14 +417,24 @@ void setup()
     // );
 
     xTaskCreatePinnedToCore(
-        serverTask,
-        "serverTask",
-        8192,
+        sensorTask,
+        "sensorTask",
+        4096,
         NULL, // task function input
         1,
-        &Task2,
-        BASE_CORE
+        &Task1,
+        RUNNING_CORE
     );
+
+    // xTaskCreatePinnedToCore(
+    //     serverTask,
+    //     "serverTask",
+    //     8192,
+    //     NULL, // task function input
+    //     1,
+    //     &Task2,
+    //     BASE_CORE
+    // );
 }
 
 void loop(){
