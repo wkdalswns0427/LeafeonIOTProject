@@ -54,6 +54,8 @@ typedef struct SENDATA{
 }SENDATA;
 
 uint baseline = 0;
+TaskHandle_t Task1;
+TaskHandle_t Task2;
 
 /* Style */
 String style =
@@ -371,9 +373,19 @@ void sensorTask( void *pvParameters){
 
 void serverTask(void *pvParameters){
     (void) pvParameters;
+    Serial.println(xPortGetCoreID());
     while(true){
         server.handleClient();
     }
+}
+
+void dummyTask(void *pvParameters){
+    (void) pvParameters;
+    Serial.println(xPortGetCoreID());
+    while(true){
+        Serial.println("t2");
+    }
+
 }
 
 void setup()
@@ -389,31 +401,40 @@ void setup()
   setupCCS();
   setupOLED();
   //==============================================================================
-  Serial.println(WiFi.localIP());
   
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   displayInitialTime();
 
     xTaskCreatePinnedToCore(
-        sensorTask,
-        "sensorTask",
+        dummyTask,
+        "dummyTask",
         4096,
         NULL, // task function input
         1,
-        NULL,
+        &Task1,
         RUNNING_CORE
     );
 
     // xTaskCreatePinnedToCore(
-    //     serverTask,
-    //     "serverTask",
-    //     1024,
+    //     sensorTask,
+    //     "sensorTask",
+    //     4096,
     //     NULL, // task function input
     //     1,
-    //     NULL,
-    //     BASE_CORE
+    //     &Task1,
+    //     RUNNING_CORE
     // );
+
+    xTaskCreatePinnedToCore(
+        serverTask,
+        "serverTask",
+        8192,
+        NULL, // task function input
+        1,
+        &Task2,
+        BASE_CORE
+    );
 }
 
 void loop(){
