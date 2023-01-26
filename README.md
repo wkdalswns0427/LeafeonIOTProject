@@ -11,6 +11,8 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 - ESP32 dev module : Lolin D32 Pro (any ESP32 module would be fine)
 - DFRobot SEN0335(CCS811 + BME280) : CO2, TVOC sensor + Temperature, Humidity sensor
 - Plantower PMS7003 : Particle Dust sensor
+- YW Robotics 0.96 inch OLED <- this thing is way off spec sheet (works fine with 3.3v, addr : 0x3C)
+- indicator LED and a switch
 - bunch of resistors, caps etc
 
 ### **Software**

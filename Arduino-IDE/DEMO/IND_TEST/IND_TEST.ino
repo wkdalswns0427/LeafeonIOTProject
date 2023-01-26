@@ -365,6 +365,10 @@ void sensorTask( void *pvParameters){
         display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
         display.display();
         delay(3000);
+
+        resetDisplay();
+        display.println("FW OTA update");
+        display.print("IP: "); display.println(WiFi.localIP());
         //==============================================================================
 
         CCS811.writeBaseLine(baseline);
@@ -393,7 +397,7 @@ void setup()
   //==============================================================================
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(115200);
-  Serial.print("begin");
+  Serial.print("Leafeon On");
   delay(1000);
   setupWiFi();
   setupWebServer();
@@ -405,16 +409,6 @@ void setup()
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   displayInitialTime();
-
-    // xTaskCreatePinnedToCore(
-    //     dummyTask,
-    //     "dummyTask",
-    //     4096,
-    //     NULL, // task function input
-    //     1,
-    //     &Task1,
-    //     RUNNING_CORE
-    // );
 
     xTaskCreatePinnedToCore(
         sensorTask,
