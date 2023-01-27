@@ -1,5 +1,3 @@
-// ota source
-// https://lastminuteengineers.com/esp32-ota-web-updater-arduino-ide/
 #include <Arduino.h>
 #include "WiFi.h"
 #include "time.h"
@@ -8,7 +6,6 @@
 #include "PMS.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
@@ -57,6 +54,8 @@ uint baseline = 0;
 TaskHandle_t Task1;
 TaskHandle_t Task2;
 
+// ------------------------------------------------------------------------------------------
+// these are not needed when using external web
 /* Style */
 String style =
 "<style>#file-input,input{width:100%;height:44px;border-radius:4px;margin:10px auto;font-size:15px}"
@@ -148,6 +147,7 @@ const char* serverIndex =
  "});"
  "});"
  "</script>";
+// ------------------------------------------------------------------------------------------
 
 void printLocalTime() {
     struct tm timeinfo;
@@ -155,7 +155,6 @@ void printLocalTime() {
         Serial.println("Failed to obtain time");
         return;
     }
-    // Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
     display.println(&timeinfo, "%H:%M:%S");
 }
 
@@ -178,8 +177,6 @@ void displayInitialTime(){
     display.println(&timeinfo, "%A, %B %d");
     display.println(&timeinfo, "%H:%M:%S");
     display.display();
-    // Serial.println(&timeinfo, "%A, %B %d");
-    // Serial.println(&timeinfo, "%H:%M:%S");
     delay(3000);
 }
 
@@ -215,8 +212,6 @@ void setupCCS(){
     // Serial.println("ccs set baseline");
     if(CCS811.checkDataReady() == true){
         baseline = CCS811.readBaseLine();
-        Serial.println(baseline, HEX);
-        
     } else {
         Serial.println("Data is not ready!");
     }
@@ -225,7 +220,7 @@ void setupCCS(){
 void setupOLED(){
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
         Serial.println(F("SSD1306 allocation failed"));
-        for (;;); // Don't proceed, loop forever
+        for (;;);
     }
     display.clearDisplay();
 
@@ -239,8 +234,6 @@ void setupOLED(){
 
 void setupWiFi(){
     WiFi.begin(ssid, password);
-    Serial.println("");
-
     // Wait for connection
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -356,13 +349,19 @@ void sensorTask( void *pvParameters){
         display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
         display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
         display.display();
-        delay(3000);
+        delay(3500);
         
         resetDisplay();
         display.println("micro particle(ug/m3)");
         display.print("PM 1.0: "); display.println(SENRESULT.PM_AE_UG_1_0);
         display.print("PM 2.5: "); display.println(SENRESULT.PM_AE_UG_2_5);
         display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
+        display.display();
+        delay(3500);
+
+        resetDisplay();
+        display.println("OTA FW update");
+        display.print("IP: "); display.println(WiFi.localIP());
         display.display();
         delay(3000);
         //==============================================================================
@@ -379,22 +378,12 @@ void serverTask(void *pvParameters){
     }
 }
 
-void dummyTask(void *pvParameters){
-    (void) pvParameters;
-    Serial.println(xPortGetCoreID());
-    while(true){
-        Serial.println("t2");
-    }
-
-}
-
 void setup()
 {
   //==============================================================================
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(115200);
-  Serial.print("Leafeon V.1.1");
-  delay(1000);
+  Serial.print("Leafeon V.1.3");
   setupWiFi();
   setupWebServer();
   setupBME();
@@ -427,6 +416,4 @@ void setup()
     );
 }
 
-void loop(){
-    // server.handleClient();
-}
+void loop(){}
