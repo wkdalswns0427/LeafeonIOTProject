@@ -10,17 +10,9 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include <Update.h>
+#include <PubSubClient.h>
 #include "config.h"
 
-#define RUNNING_CORE 1
-#define BASE_CORE 0
-#define SDA_PIN 21
-#define SCL_PIN 22
-#define TX_PIN 1
-#define RX_PIN 3
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET     -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // elements of SEN0335 : I2C
@@ -36,6 +28,8 @@ PMS::DATA pmsdata;
 
 // web update server
 WebServer server(80);
+WiFiClient espClient;
+PubSubClient client(espClient);
 
 // data cluster
 typedef struct SENDATA{
@@ -192,6 +186,67 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
   }
 }
 
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (client.connect("ESP32Client")) {
+      Serial.println("connected");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+    }
+  }
+}
+
+// callback function --> sleep, reboot control from main broker server
+void callback(char* topic, byte* message, unsigned int length) {
+  Serial.print("Message arrived on topic: ");
+  Serial.print(topic);
+  Serial.print(". Message: ");
+  String messageServer;
+  
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)message[i]);
+    messageServer += (char)message[i];
+  }
+  Serial.println();
+
+  if (String(topic) == topic) {
+    Serial.print("Changing output to ");
+    if(messageServer == "sleep"){
+      Serial.println("sleep");
+      digitalWrite(LED_BUILTIN, HIGH);
+      //************* add deepsleep here ***************
+    }
+    else if(messageServer == "reboot"){
+      Serial.println("reboot");
+      digitalWrite(LED_BUILTIN, LOW);
+      //************* add reboot here **************
+    }
+  }
+}
+
+void setupMQTT(){
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+
+  while (!client.connected()) {
+    Serial.println("Connecting to MQTT...");
+ 
+    if (client.connect("LeafeonCLient")) {
+      Serial.println("connected");  
+    } else {
+      Serial.print("failed with state ");
+      Serial.print(client.state());
+      delay(2000);
+    }
+  }
+
+  client.subscribe(topic);
+}
+
 void setupBME(){
     Serial.println("bme read data test");
     while(bme.begin() != BME::eStatusOK) {
@@ -326,6 +381,13 @@ uint16_t *readPMS(){
   return data;
 }
 
+void publishData(char *serialData){
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.publish("Leafeon/sensdata", serialData);
+}
+
 // main function
 void sensorTask( void *pvParameters){
 
@@ -344,7 +406,6 @@ void sensorTask( void *pvParameters){
         printLocalTime();
         display.print("temp(C): "); display.println(SENRESULT.temperature);
         display.print("P(Pa): "); display.println(SENRESULT.pressure);
-        //   display.print("alt(m):  "); display.println(SENRESULT.altitude);
         display.print("hum(%): "); display.println(SENRESULT.humidity);
         display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
         display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
@@ -367,12 +428,12 @@ void sensorTask( void *pvParameters){
         //==============================================================================
 
         CCS811.writeBaseLine(baseline);
+        //publishData(//char_data);
     }
 }
 
 void serverTask(void *pvParameters){
     (void) pvParameters;
-    Serial.println(xPortGetCoreID());
     while(true){
         server.handleClient();
     }
@@ -386,6 +447,7 @@ void setup()
   Serial.print("Leafeon V.1.3");
   setupWiFi();
   setupWebServer();
+  setupMQTT();
   setupBME();
   setupCCS();
   setupOLED();
@@ -400,7 +462,7 @@ void setup()
         "sensorTask",
         4096,
         NULL, // task function input
-        3,
+        2,
         &Task1,
         RUNNING_CORE
     );
