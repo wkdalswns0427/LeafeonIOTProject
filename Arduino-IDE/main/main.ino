@@ -10,9 +10,17 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include <Update.h>
-#include <PubSubClient.h>
 #include "config.h"
 
+#define RUNNING_CORE 1
+#define BASE_CORE 0
+#define SDA_PIN 21
+#define SCL_PIN 22
+#define TX_PIN 1
+#define RX_PIN 3
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET     -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // elements of SEN0335 : I2C
@@ -28,8 +36,6 @@ PMS::DATA pmsdata;
 
 // web update server
 WebServer server(80);
-WiFiClient espClient;
-PubSubClient client(espClient);
 
 // data cluster
 typedef struct SENDATA{
@@ -44,10 +50,104 @@ typedef struct SENDATA{
     uint16_t PM_AE_UG_10_0;
 }SENDATA;
 
-RTC_DATA_ATTR int bootCount = 0;
 uint baseline = 0;
 TaskHandle_t Task1;
 TaskHandle_t Task2;
+
+// ------------------------------------------------------------------------------------------
+// these are not needed when using external web
+/* Style */
+String style =
+"<style>#file-input,input{width:100%;height:44px;border-radius:4px;margin:10px auto;font-size:15px}"
+"input{background:#f1f1f1;border:0;padding:0 15px}body{background:#3498db;font-family:sans-serif;font-size:14px;color:#777}"
+"#file-input{padding:0;border:1px solid #ddd;line-height:44px;text-align:left;display:block;cursor:pointer}"
+"#bar,#prgbar{background-color:#f1f1f1;border-radius:10px}#bar{background-color:#3498db;width:0%;height:10px}"
+"form{background:#fff;max-width:258px;margin:75px auto;padding:30px;border-radius:5px;text-align:center}"
+".btn{background:#3498db;color:#fff;cursor:pointer}</style>";
+
+const char* loginIndex =
+ "<form name='loginForm'>"
+    "<table width='20%' bgcolor='A09F9F' align='center'>"
+        "<tr>"
+            "<td colspan=2>"
+                "<center><font size=4><b>ESP32 Login Page</b></font></center>"
+                "<br>"
+            "</td>"
+            "<br>"
+            "<br>"
+        "</tr>"
+        "<tr>"
+             "<td>Username:</td>"
+             "<td><input type='text' size=25 name='userid'><br></td>"
+        "</tr>"
+        "<br>"
+        "<br>"
+        "<tr>"
+            "<td>Password:</td>"
+            "<td><input type='Password' size=25 name='pwd'><br></td>"
+            "<br>"
+            "<br>"
+        "</tr>"
+        "<tr>"
+            "<td><input type='submit' onclick='check(this.form)' value='Login'></td>"
+        "</tr>"
+    "</table>"
+"</form>"
+"<script>"
+    "function check(form)"
+    "{"
+    "if(form.userid.value=='admin' && form.pwd.value=='admin')"
+    "{"
+    "window.open('/serverIndex')"
+    "}"
+    "else"
+    "{"
+    " alert('Error Password or Username')/*displays error message*/"
+    "}"
+    "}"
+"</script>";
+
+/*
+ * Server Index Page
+ */
+
+const char* serverIndex =
+"<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>"
+"<form method='POST' action='#' enctype='multipart/form-data' id='upload_form'>"
+   "<input type='file' name='update'>"
+        "<input type='submit' value='Update'>"
+    "</form>"
+ "<div id='prg'>progress: 0%</div>"
+ "<script>"
+  "$('form').submit(function(e){"
+  "e.preventDefault();"
+  "var form = $('#upload_form')[0];"
+  "var data = new FormData(form);"
+  " $.ajax({"
+  "url: '/update',"
+  "type: 'POST',"
+  "data: data,"
+  "contentType: false,"
+  "processData:false,"
+  "xhr: function() {"
+  "var xhr = new window.XMLHttpRequest();"
+  "xhr.upload.addEventListener('progress', function(evt) {"
+  "if (evt.lengthComputable) {"
+  "var per = evt.loaded / evt.total;"
+  "$('#prg').html('progress: ' + Math.round(per*100) + '%');"
+  "}"
+  "}, false);"
+  "return xhr;"
+  "},"
+  "success:function(d, s) {"
+  "console.log('success!')"
+ "},"
+ "error: function (a, b, c) {"
+ "}"
+ "});"
+ "});"
+ "</script>";
+// ------------------------------------------------------------------------------------------
 
 void printLocalTime() {
     struct tm timeinfo;
@@ -56,22 +156,6 @@ void printLocalTime() {
         return;
     }
     display.println(&timeinfo, "%H:%M:%S");
-}
-
-void print_wakeup_reason(){
-  esp_sleep_wakeup_cause_t wakeup_reason;
-
-  wakeup_reason = esp_sleep_get_wakeup_cause();
-
-  switch(wakeup_reason)
-  {
-    case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
-    case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
-    case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
-    case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
-    case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
-    default : Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason); break;
-  }
 }
 
 void resetDisplay(){
@@ -106,76 +190,6 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
   case BME::eStatusErrParameter:    Serial.println("parameter error"); break;
   default: Serial.println("unknow status"); break;
   }
-}
-
-void reconnect() {
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    if (client.connect("ESP32Client")) {
-      Serial.println("connected");
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
-    }
-  }
-}
-
-// callback function --> sleep, reboot control from main broker server
-void callback(char* topic, byte* message, unsigned int length) {
-  Serial.print("Message arrived on topic: ");
-  Serial.print(topic);
-  Serial.print(". Message: ");
-  String messageServer;
-  
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
-    messageServer += (char)message[i];
-  }
-  Serial.println();
-
-  if (String(topic) == topic) {
-    Serial.print("Changing output to ");
-    if(messageServer == "sleep"){
-      Serial.println("sleep");
-      coreSleep();
-    }
-    else if(messageServer == "reboot"){
-      Serial.println("reboot");
-      digitalWrite(LED_BUILTIN, LOW);
-      //************* add reboot here **************
-    }
-  }
-}
-
-void setupMQTT(){
-  client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
-
-  while (!client.connected()) {
-    Serial.println("Connecting to MQTT...");
- 
-    if (client.connect("LeafeonCLient")) {
-      Serial.println("connected");  
-    } else {
-      Serial.print("failed with state ");
-      Serial.print(client.state());
-      delay(2000);
-    }
-  }
-
-  client.subscribe(topic);
-}
-
-// sleep for 1 hour
-void coreSleep(){
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) +
-  " Seconds");
-  Serial.flush();
-  Serial1.flush(); 
-  esp_deep_sleep_start();
 }
 
 void setupBME(){
@@ -312,13 +326,6 @@ uint16_t *readPMS(){
   return data;
 }
 
-void publishData(char *serialData){
-  if (!client.connected()) {
-    reconnect();
-  }
-  client.publish("Leafeon/sensdata", serialData);
-}
-
 // main function
 void sensorTask( void *pvParameters){
 
@@ -337,6 +344,7 @@ void sensorTask( void *pvParameters){
         printLocalTime();
         display.print("temp(C): "); display.println(SENRESULT.temperature);
         display.print("P(Pa): "); display.println(SENRESULT.pressure);
+        //   display.print("alt(m):  "); display.println(SENRESULT.altitude);
         display.print("hum(%): "); display.println(SENRESULT.humidity);
         display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
         display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
@@ -359,12 +367,12 @@ void sensorTask( void *pvParameters){
         //==============================================================================
 
         CCS811.writeBaseLine(baseline);
-        //publishData(//char_data);
     }
 }
 
 void serverTask(void *pvParameters){
     (void) pvParameters;
+    Serial.println(xPortGetCoreID());
     while(true){
         server.handleClient();
     }
@@ -375,13 +383,9 @@ void setup()
   //==============================================================================
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(115200);
-  ++bootCount;
-  Serial.println("Boot number: " + String(bootCount));
-  print_wakeup_reason();
-  Serial.print("Leafeon V.1.4");
+  Serial.print("Leafeon V.1.3");
   setupWiFi();
   setupWebServer();
-  setupMQTT();
   setupBME();
   setupCCS();
   setupOLED();
@@ -396,7 +400,7 @@ void setup()
         "sensorTask",
         4096,
         NULL, // task function input
-        2,
+        3,
         &Task1,
         RUNNING_CORE
     );

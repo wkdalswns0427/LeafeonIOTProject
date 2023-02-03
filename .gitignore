@@ -400,3 +400,5 @@ FodyWeavers.xsd
 .devcontainer
 ./ESP-IDF-demos/I2C_DACOM
 build/
+*.cfg
+*.svd
