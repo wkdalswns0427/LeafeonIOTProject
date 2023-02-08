@@ -3,8 +3,8 @@ import paho.mqtt.client as mqtt
 from fastapi_mqtt.fastmqtt import FastMQTT
 from fastapi_mqtt.config import MQTTConfig
 from fastapi import FastAPI
-from model import Item, DiscountItem, IsDiscount
-from utils import dataHandler
+from src.model import Item, DiscountItem, IsDiscount
+# from src.utils import dataHandler
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()

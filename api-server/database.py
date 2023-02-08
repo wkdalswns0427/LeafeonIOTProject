@@ -9,7 +9,7 @@ import pymysql
 import pandas as pd
 import csv
 from src.awsconfig import awsconfig
-from src.query import make_table
+from src.query import Query
 
 #RDS info declared this way
 # class awsconfig:
@@ -18,7 +18,7 @@ from src.query import make_table
 #     username : str
 #     password : str
 #     database : str
-RDSconfig = awsconfig()
+
 
 def connect_RDS(host, port, username, password, database):
 
@@ -30,17 +30,20 @@ def connect_RDS(host, port, username, password, database):
         logging.error("DB Not connecting...")
 
     return conn, cursor
-        
 
 
 def main():
     #call RDS
     conn, cursor = connect_RDS(awsconfig.host, awsconfig.port, awsconfig.username, awsconfig.password, awsconfig.database)
     print("DB connected")
-    query = make_table()
 
-    cursor.execute(query)
+    # query = Query.make_table()
+    # cursor.execute(query)
 
+    query = Query.insert_data()
+    cursor.execute(query, (0, "temperature", "C"))
+
+    conn.commit()
     conn.close()
     
 if __name__ == "__main__":
