@@ -402,3 +402,4 @@ FodyWeavers.xsd
 build/
 *.cfg
 *.svd
+api-server/awsconfig.py
