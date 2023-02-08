@@ -8,7 +8,8 @@ import time
 import pymysql
 import pandas as pd
 import csv
-from awsconfig import awsconfig
+from src.awsconfig import awsconfig
+from src.query import make_table
 
 #RDS info declared this way
 # class awsconfig:
@@ -36,6 +37,11 @@ def main():
     #call RDS
     conn, cursor = connect_RDS(awsconfig.host, awsconfig.port, awsconfig.username, awsconfig.password, awsconfig.database)
     print("DB connected")
+    query = make_table()
 
+    cursor.execute(query)
+
+    conn.close()
+    
 if __name__ == "__main__":
     main()
