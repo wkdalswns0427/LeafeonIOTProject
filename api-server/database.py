@@ -31,20 +31,17 @@ def connect_RDS(host, port, username, password, database):
 
     return conn, cursor
 
+class insertClass:
+    def add_sensor_class(num, sensor, param):
+        #call RDS
+        conn, cursor = connect_RDS(awsconfig.host, awsconfig.port, awsconfig.username, awsconfig.password, awsconfig.database)
+        print("DB connected")
 
-def main():
-    #call RDS
-    conn, cursor = connect_RDS(awsconfig.host, awsconfig.port, awsconfig.username, awsconfig.password, awsconfig.database)
-    print("DB connected")
+        # query = Query.make_table()
+        # cursor.execute(query)
 
-    # query = Query.make_table()
-    # cursor.execute(query)
+        query = Query.insert_data()
+        cursor.execute(query, (num, sensor, param))
 
-    query = Query.insert_data()
-    cursor.execute(query, (0, "temperature", "C"))
-
-    conn.commit()
-    conn.close()
-    
-if __name__ == "__main__":
-    main()
+        conn.commit()
+        conn.close()

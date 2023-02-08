@@ -15,3 +15,8 @@ class DiscountItem(BaseModel):
 
 class IsDiscount(BaseModel):
     discount : Optional[bool] = False
+
+class SensorClassItem(BaseModel):
+    id : str
+    sensor : str
+    parameter : str
