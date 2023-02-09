@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class Item(BaseModel):
@@ -15,6 +15,14 @@ class DiscountItem(BaseModel):
 
 class IsDiscount(BaseModel):
     discount : Optional[bool] = False
+
+class readTable(BaseModel):
+    name : str
+
+########## DB related Models ##########
+class makeTable(BaseModel):
+    name : str
+    contents : List[str] = []
 
 class SensorClassItem(BaseModel):
     id : str

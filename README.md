@@ -22,3 +22,11 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 - Fast API based REST API server running at localhost:8000
 - super simple javascript frontend
 - AWS RDS database
+
+**5 types of firmwares**
+```
+1. Sensors Only -> only display with oled
+2. Sensors OTA -> a local OTA server
+3. Sensors MQTT -> a light api server usage of MQTT control + OTA
+4. Sensors DB -> a light api server running along with AWS RDS DB + OTA
+```

@@ -403,3 +403,4 @@ build/
 *.cfg
 *.svd
 api-server/src/awsconfig.py
+firmware/dev/SENSORS_DB/dbconfig.h

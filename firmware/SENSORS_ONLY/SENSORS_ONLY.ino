@@ -1,4 +1,4 @@
-// #include <Arduino.h>
+#include <Arduino.h>
 #include "WiFi.h"
 #include "time.h"
 #include "DFRobot_BME280.h"
@@ -6,21 +6,10 @@
 #include "PMS.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <WiFiClient.h>
+#include "config.h"
 
-#define SDA_PIN 21
-#define SCL_PIN 22
-#define TX_PIN 1
-#define RX_PIN 3
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET     -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-const char* ssid = "Roboin";        //U+Net850C
-const char* password = "roboin1234";    //C87568BJ$F//12345678///csdowu38
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 32400;
-const int   daylightOffset_sec = 0;
 
 // elements of SEN0335 : I2C
 typedef DFRobot_BME280_IIC    BME;   
@@ -47,6 +36,7 @@ typedef struct SENDATA{
 }SENDATA;
 
 uint baseline = 0;
+TaskHandle_t Task1;
 
 void printLocalTime() {
     struct tm timeinfo;
@@ -54,8 +44,13 @@ void printLocalTime() {
         Serial.println("Failed to obtain time");
         return;
     }
-    // Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
     display.println(&timeinfo, "%H:%M:%S");
+}
+
+void resetDisplay(){
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.setTextSize(1);
 }
 
 void displayInitialTime(){
@@ -80,7 +75,7 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
   switch(eStatus) {
   case BME::eStatusOK:    Serial.println("everything ok"); break;
   case BME::eStatusErr:   Serial.println("unknow error"); break;
-  case BME::eStatusErrDeviceNotDetected:    Serial.println("device not detected"); break;
+  case BME::eStatusErrDeviceNotDetected:    /*Serial.println("device not detected");*/ break;
   case BME::eStatusErrParameter:    Serial.println("parameter error"); break;
   default: Serial.println("unknow status"); break;
   }
@@ -89,7 +84,7 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
 void setupBME(){
     Serial.println("bme read data test");
     while(bme.begin() != BME::eStatusOK) {
-        Serial.println("bme begin faild");
+        // Serial.println("bme begin faild");
         printLastOperateStatus(bme.lastOperateStatus);
         delay(2000);
     }
@@ -98,16 +93,14 @@ void setupBME(){
 
 void setupCCS(){
     while(CCS811.begin() != 0){
-            Serial.println("failed to init chip, please check if the chip connection is fine");
+            // Serial.println("failed to init chip, please check if the chip connection is fine");
             delay(1000);
         }
     Serial.println("ccs begin success");
     delay(1000);
-    Serial.println("ccs set baseline");
+    // Serial.println("ccs set baseline");
     if(CCS811.checkDataReady() == true){
         baseline = CCS811.readBaseLine();
-        Serial.println(baseline, HEX);
-        
     } else {
         Serial.println("Data is not ready!");
     }
@@ -116,7 +109,7 @@ void setupCCS(){
 void setupOLED(){
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
         Serial.println(F("SSD1306 allocation failed"));
-        for (;;); // Don't proceed, loop forever
+        for (;;);
     }
     display.clearDisplay();
 
@@ -130,19 +123,16 @@ void setupOLED(){
 
 void setupWiFi(){
     WiFi.begin(ssid, password);
+    // Wait for connection
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
+        Serial.print(".");
     }
-    resetDisplay();
-    display.println("WIFI CONNECTED");
-    display.print("IP :"); display.println(WiFi.localIP());
-    delay(2000);
-}
-
-void resetDisplay(){
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.setTextSize(1);
+    Serial.println("");
+    Serial.print("Connected to ");
+    Serial.println(ssid);
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
 }
 
 float *readBME(){
@@ -180,55 +170,75 @@ uint16_t *readPMS(){
 }
 
 // main function
-int main(){
-  float* BMEdata = readBME();
-  uint16_t* CCSdata = readCCS();
-  uint16_t* PMSdata = readPMS();
-  SENDATA SENRESULT = 
-          {BMEdata[0], BMEdata[1], BMEdata[2], BMEdata[3]
-          ,CCSdata[0], CCSdata[1]
-          ,PMSdata[0], PMSdata[1], PMSdata[2]};
+void sensorTask( void *pvParameters){
 
-  //================= this part shall be either posting or OLED =================
-  resetDisplay();
-  printLocalTime();
-  display.print("temp(C): "); display.println(SENRESULT.temperature);
-  display.print("P(Pa): "); display.println(SENRESULT.pressure);
-//   display.print("alt(m):  "); display.println(SENRESULT.altitude);
-  display.print("hum(%): "); display.println(SENRESULT.humidity);
-  display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
-  display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
-  display.display();
-  delay(5000);
-  
-  resetDisplay();
-  display.println("micro particle(ug/m3)");
-  display.print("PM 1.0: "); display.println(SENRESULT.PM_AE_UG_1_0);
-  display.print("PM 2.5: "); display.println(SENRESULT.PM_AE_UG_2_5);
-  display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
-  display.display();
-  delay(5000);
-  //==============================================================================
+  (void) pvParameters;
+    while(true){
+        float* BMEdata = readBME();
+        uint16_t* CCSdata = readCCS();
+        uint16_t* PMSdata = readPMS();
+        SENDATA SENRESULT = 
+                {BMEdata[0], BMEdata[1], BMEdata[2], BMEdata[3]
+                ,CCSdata[0], CCSdata[1]
+                ,PMSdata[0], PMSdata[1], PMSdata[2]};
 
-  CCS811.writeBaseLine(baseline);
-  return 0;
+        //================= this part shall be either posting or OLED =================
+        resetDisplay();
+        printLocalTime();
+        display.print("temp(C): "); display.println(SENRESULT.temperature);
+        display.print("P(Pa): "); display.println(SENRESULT.pressure);
+        //   display.print("alt(m):  "); display.println(SENRESULT.altitude);
+        display.print("hum(%): "); display.println(SENRESULT.humidity);
+        display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
+        display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
+        display.display();
+        delay(3500);
+        
+        resetDisplay();
+        display.println("micro particle(ug/m3)");
+        display.print("PM 1.0: "); display.println(SENRESULT.PM_AE_UG_1_0);
+        display.print("PM 2.5: "); display.println(SENRESULT.PM_AE_UG_2_5);
+        display.print("PM 10.0: "); display.println(SENRESULT.PM_AE_UG_10_0);
+        display.display();
+        delay(3500);
+
+        resetDisplay();
+        display.println("OTA FW update");
+        display.print("IP: "); display.println(WiFi.localIP());
+        display.display();
+        delay(3000);
+        //==============================================================================
+
+        CCS811.writeBaseLine(baseline);
+    }
 }
 
 void setup()
 {
+  //==============================================================================
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.print("Leafeon V.1.3");
+  setupWiFi();
+  setupWebServer();
   setupBME();
   setupCCS();
   setupOLED();
-  setupWiFi();
+  //==============================================================================
   
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   displayInitialTime();
+
+    xTaskCreatePinnedToCore(
+        sensorTask,
+        "sensorTask",
+        4096,
+        NULL, // task function input
+        3,
+        &Task1,
+        RUNNING_CORE
+    );
 }
 
-void loop()
-{
-    main();
-}
+void loop(){}

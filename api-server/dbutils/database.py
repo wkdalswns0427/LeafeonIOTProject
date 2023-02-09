@@ -12,37 +12,13 @@ from dbutils.query import Query
 import traceback
 from psycopg2.extras import RealDictCursor, execute_values
 
-#RDS info declared this way
+#RDS info declared this way in awsconfig
 # class awsconfig:
 #     host: str 
 #     port : int
 #     username : str
 #     password : str
 #     database : str
-
-
-def connect_RDS(host, port, username, password, database):
-
-    try:
-        conn = pymysql.connect(host = host, user = username, passwd = password, db = database, 
-            port = port, use_unicode = True, charset = 'utf8')
-        cursor = conn.cursor()
-    except:
-        logging.error("DB Not connecting...")
-
-    return conn, cursor
-
-class insertClass:
-    def add_sensor_class(num, sensor, param):
-        #call RDS
-        conn, cursor = connect_RDS(awsconfig.host, awsconfig.port, awsconfig.username, awsconfig.password, awsconfig.database)
-        print("DB connected")
-
-        query = Query.insert_data()
-        cursor.execute(query, (num, sensor, param))
-
-        conn.commit()
-        conn.close()
 
 class DBManager():
     def __init__(self):
@@ -89,6 +65,7 @@ class DBManager():
 
         return True
         
+    # ------------------------------------------------------
 
     def __execute(self, query):
         if not self.conn:

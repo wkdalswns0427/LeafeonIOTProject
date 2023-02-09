@@ -5,7 +5,7 @@ from fastapi_mqtt.config import MQTTConfig
 from fastapi import FastAPI
 from utils.model import SensorClassItem
 from starlette.middleware.cors import CORSMiddleware
-from dbutils.database import insertClass, DBManager
+from dbutils.database import DBManager
 
 app = FastAPI()
 mqtt_config = MQTTConfig()
