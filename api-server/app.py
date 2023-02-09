@@ -3,10 +3,9 @@ import paho.mqtt.client as mqtt
 from fastapi_mqtt.fastmqtt import FastMQTT
 from fastapi_mqtt.config import MQTTConfig
 from fastapi import FastAPI
-from src.model import SensorClassItem
-# from src.utils import dataHandler
+from utils.model import SensorClassItem
 from starlette.middleware.cors import CORSMiddleware
-from database import insertClass as ic
+from dbutils.database import insertClass, DBManager
 
 app = FastAPI()
 mqtt_config = MQTTConfig()
@@ -27,12 +26,14 @@ async def first():
     return hi
 
 # display sensor data
-@app.post("/sensordata")
+@app.post("/addSebsirData")
 async def postsensordata():
+    dbmanager = DBManager()
     
     return 0
 
 @app.post("/addSensorClass")
 async def addSensorClass(item: SensorClassItem):
-    ic.add_sensor_class(item.id, item.sensor, item.parameter)
+    dbmanager = DBManager()
+    dbmanager.__insert_sensorclass(item)
     return True

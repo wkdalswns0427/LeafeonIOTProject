@@ -20,3 +20,13 @@ class SensorClassItem(BaseModel):
     id : str
     sensor : str
     parameter : str
+
+class SensorData(BaseModel):
+    Temp : float
+    Humi : float
+    Press : float
+    eCO2 : float
+    eTVOC : float
+    pm01 : float
+    pm25 : float
+    pm10 : float

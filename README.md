@@ -19,3 +19,6 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 
 - either Arduino IDE or Espressif IDF
 - intermediate level of C/C++
+- Fast API based REST API server running at localhost:8000
+- super simple javascript frontend
+- AWS RDS database
