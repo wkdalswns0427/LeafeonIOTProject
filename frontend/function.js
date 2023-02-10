@@ -1,8 +1,7 @@
 
-var url_on = 'http://localhost:8000/'
-var url_off = 'http://localhost:8000/'
+require("dotenv").config()
 
-function function(){
+function function1(){
     var dsc = document.getElementById("discount1");
     if(document.getElementById("esp1").checked == true){
         var carno = document.getElementById("carno1").value;

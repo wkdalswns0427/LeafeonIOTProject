@@ -7,7 +7,7 @@ from typing import Optional,List
 from fastapi import FastAPI, status,HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
-from utils.model import SensorClassItem
+from utils.models import SensorClassItem
 from dbutils.database import DBManager
 
 app = FastAPI()
@@ -63,8 +63,8 @@ def uploadsensordata():
 
 
 ########### SQLALCHEMY #########
-from dbutils.database import SessionLocal
-import utils.models as models
+# from dbutils.database import SessionLocal
+# import utils.models as models
 # db=SessionLocal()
 # @app.get("/")
 # def init():

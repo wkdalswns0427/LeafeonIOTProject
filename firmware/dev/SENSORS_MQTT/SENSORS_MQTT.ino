@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include "WiFi.h"
 #include "time.h"
 #include "DFRobot_BME280.h"
@@ -108,6 +109,16 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
   }
 }
 
+void blink(){
+  for(int i = 0; i<5; i++){
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+  }
+  digitalWrite(LED_BUILTIN, LOW);
+}
+
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
@@ -122,11 +133,21 @@ void reconnect() {
   }
 }
 
+// sleep for 1 hour
+void coreSleep(){
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) +
+  " Seconds");
+  Serial.flush();
+  Serial1.flush(); 
+  esp_deep_sleep_start();
+}
+
 // callback function --> sleep, reboot control from main broker server
 void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.print(topic);
-  Serial.print(". Message: ");
+  Serial.print("Message: ");
   String messageServer;
   
   for (int i = 0; i < length; i++) {
@@ -135,15 +156,16 @@ void callback(char* topic, byte* message, unsigned int length) {
   }
   Serial.println();
 
-  if (String(topic) == topic) {
+  if (String(topic) == targetTopic) {
     Serial.print("Changing output to ");
     if(messageServer == "sleep"){
       Serial.println("sleep");
       coreSleep();
     }
+    // todo
     else if(messageServer == "reboot"){
       Serial.println("reboot");
-      digitalWrite(LED_BUILTIN, LOW);
+      blink()
       //************* add reboot here **************
     }
   }
@@ -166,16 +188,6 @@ void setupMQTT(){
   }
 
   client.subscribe(topic);
-}
-
-// sleep for 1 hour
-void coreSleep(){
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) +
-  " Seconds");
-  Serial.flush();
-  Serial1.flush(); 
-  esp_deep_sleep_start();
 }
 
 void setupBME(){
