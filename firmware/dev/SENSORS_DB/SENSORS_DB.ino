@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoJSON.h>
 #include "WiFi.h"
 #include "time.h"
 #include "DFRobot_BME280.h"
@@ -20,7 +21,6 @@ typedef DFRobot_BME280_IIC    BME;
 typedef DFRobot_CCS811        CCS;
 BME    bme(&Wire, 0x76);   
 CCS CCS811(&Wire, 0x5A);
-#define SEA_LEVEL_PRESSURE    1015.0f
 
 // PMS7003 sensor : UART - using PMSSerial
 PMS pms(Serial1);
@@ -29,7 +29,6 @@ PMS::DATA pmsdata;
 // web update server
 WebServer server(80);
 
-uint baseline = 0;
 TaskHandle_t Task1;
 TaskHandle_t Task2;
 

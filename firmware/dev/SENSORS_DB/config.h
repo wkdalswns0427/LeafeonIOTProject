@@ -10,6 +10,8 @@
 #define OLED_RESET     -1
 #define uS_TO_S_FACTOR 1000000ULL
 #define TIME_TO_SLEEP  3600   
+#define SEA_LEVEL_PRESSURE    1015.0f
+uint baseline = 0;
 
 #define SENSOR_TEMP 1
 #define SENSOR_HUMI 2
@@ -48,7 +50,7 @@ const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
 unsigned long timerDelay = 5000;
 unsigned lone lastTime = 0;
-StaticJsonDocument<250> sensorData;
+StaticJsonDocument<2048> sensorData;
 
 // ------------------------------------------------------------------------------------------
 // these are not needed when using external web

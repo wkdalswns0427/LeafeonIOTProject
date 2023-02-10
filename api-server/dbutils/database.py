@@ -84,3 +84,28 @@ class DBManager():
 
         cur.close()
         return result
+
+############# SQLALCHEMY ###########################
+
+# from sqlalchemy.orm import declarative_base
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
+# from dbutils.awsconfig import awsconfig
+# from sqlalchemy.engine import URL
+
+# url = URL.create(drivername="mysql",
+#             username=awsconfig.username,
+#             password = awsconfig.password,
+#             host=awsconfig.host, 
+#             database=awsconfig.database,
+#             port = awsconfig.port
+#         )
+
+# engine=create_engine(url,
+#     echo=True
+# )
+# # "postgresql://{YOUR_DATABASE_USER}:{YOUR_DATABASE_PASSWORD}@localhost/{YOUR_DATABASE_NAME}"
+
+# Base=declarative_base()
+
+# SessionLocal=sessionmaker(bind=engine)
