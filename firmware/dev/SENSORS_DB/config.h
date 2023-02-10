@@ -11,6 +11,16 @@
 #define uS_TO_S_FACTOR 1000000ULL
 #define TIME_TO_SLEEP  3600   
 
+#define SENSOR_TEMP 1
+#define SENSOR_HUMI 2
+#define SENSOR_PRES 3
+#define SENSOR_ALTI 4
+#define SENSOR_eCO2 8
+#define SENSOR_TVOC 9
+#define SENSOR_PM01 16
+#define SENSOR_PM25 17
+#define SENSOR_PM10 18
+
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -18,12 +28,27 @@ typedef char s8;
 typedef short s16;
 typedef int s32;
 
+typedef struct SENDATA{
+    float temperature;
+    float pressure;
+    float altitude;
+    float humidity;
+    uint16_t eCO2;
+    uint16_t eTVOC;
+    uint16_t PM_AE_UG_1_0;
+    uint16_t PM_AE_UG_2_5;
+    uint16_t PM_AE_UG_10_0;
+}SENDATA;
+
 const char* host = "esp32";
 const char* ssid = "**********";        //U+Net850C
 const char* password = "*********";    //C87568BJ$F//12345678///csdowu38
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
+unsigned long timerDelay = 5000;
+unsigned lone lastTime = 0;
+StaticJsonDocument<250> sensorData;
 
 // ------------------------------------------------------------------------------------------
 // these are not needed when using external web

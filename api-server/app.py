@@ -26,7 +26,7 @@ async def first():
     return hi
 
 # display sensor data
-@app.post("/addSebsirData")
+@app.post("/addSebsorData")
 async def postsensordata():
     dbmanager = DBManager()
     

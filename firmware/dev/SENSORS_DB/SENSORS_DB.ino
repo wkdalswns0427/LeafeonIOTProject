@@ -10,7 +10,9 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include <Update.h>
+#include <HTTPClient.h>
 #include "config.h"
+#include "dbconfig.h"
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // elements of SEN0335 : I2C
@@ -26,19 +28,6 @@ PMS::DATA pmsdata;
 
 // web update server
 WebServer server(80);
-
-// data cluster
-typedef struct SENDATA{
-    float temperature;
-    float pressure;
-    float altitude;
-    float humidity;
-    uint16_t eCO2;
-    uint16_t eTVOC;
-    uint16_t PM_AE_UG_1_0;
-    uint16_t PM_AE_UG_2_5;
-    uint16_t PM_AE_UG_10_0;
-}SENDATA;
 
 uint baseline = 0;
 TaskHandle_t Task1;
@@ -142,8 +131,7 @@ void setupWiFi(){
 }
 
 void setupWebServer(){
-      /*use mdns for host name resolution*/
-    if (!MDNS.begin(host)) { //http://esp32.local
+    if (!MDNS.begin(host)) {
         Serial.println("Error setting up MDNS responder!");
         while (1) {
         delay(1000);
@@ -214,11 +202,61 @@ uint16_t *readPMS(){
   while (Serial1.available()) { Serial1.read(); }
   pms.requestRead();
   if (pms.readUntil(pmsdata)){
-      data[0] = pmsdata.PM_AE_UG_1_0;
+      data[0] = pmsdata.PM_AE_UG_0_1;
       data[1] = pmsdata.PM_AE_UG_2_5;
       data[2] = pmsdata.PM_AE_UG_1_0;
   }
   return data;
+}
+
+void sensorPOST(struct SENDATA){
+    sensorData["data"][0]["sensortype"] = SENSOR_TEMP;
+    sensorData["data"][0]["value"] = SENDATA.temperature;
+    sensorData["data"][1]["sensortype"] = SENSOR_HUMI;
+    sensorData["data"][1]["value"] = SENDATA.humidity;
+    sensorData["data"][2]["sensortype"] = SENSOR_PRES;
+    sensorData["data"][2]["value"] = SENDATA.pressure;
+    sensorData["data"][3]["sensortype"] = SENSOR_ALTI;
+    sensorData["data"][3]["value"] = SENDATA.altitude;
+    sensorData["data"][4]["sensortype"] = SENSOR_eCO2;
+    sensorData["data"][4]["value"] = SENDATA.eCO2;
+    sensorData["data"][5]["sensortype"] = SENSOR_TVOC;
+    sensorData["data"][5]["value"] = SENDATA.eTVOC;
+    sensorData["data"][6]["sensortype"] = SENSOR_PM01;
+    sensorData["data"][6]["value"] = SENDATA.PM_AE_UG_1_0;
+    sensorData["data"][7]["sensortype"] = SENSOR_PM25;
+    sensorData["data"][7]["value"] = SENDATA.PM_AE_UG_2_5;
+    sensorData["data"][8]["sensortype"] = SENSOR_PM10;
+    sensorData["data"][8]["value"] = SENDATA.PM_AE_UG_10_0;
+}
+
+void postHTTP(struct SENDATA){
+  HTTPClient http;
+  sensorPOST(SENDATA);
+  String requestBody;
+  serializeJson(sensor, requestBody);
+
+  http.begin(serverName); //todo : find uri
+  http.addHeader("Content-Type", "application/json", "Content-Length", requestBody.length());
+  
+
+  Serial.println(requestBody);
+  int httpResponseCode = http.POST(requestBody);
+  if (httpResponseCode > 0) {
+      errcnt_countup(&err_api, 0);
+      Serial.print("sensor data post result: ");
+      Serial.println(httpResponseCode);
+      Serial.println(http.getString());
+  } else {
+      errcnt_countup(&err_api, 1);
+      Serial.print("error with httpResponseCode: ");
+      Serial.println(httpResponseCode);
+  }
+
+  sensor.clear();
+  requestBody.clear();
+  http.end();
+
 }
 
 // main function
@@ -259,6 +297,8 @@ void sensorTask( void *pvParameters){
         display.print("IP: "); display.println(WiFi.localIP());
         display.display();
         delay(3000);
+
+        postHTTP(SENRESULT);
         //==============================================================================
 
         CCS811.writeBaseLine(baseline);
