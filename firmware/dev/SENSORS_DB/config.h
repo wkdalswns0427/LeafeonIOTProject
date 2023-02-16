@@ -49,12 +49,12 @@ const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
 unsigned long timerDelay = 5000;
-unsigned lone lastTime = 0;
+unsigned long lastTime = 0;
 StaticJsonDocument<2048> sensorData;
 
 String Device_id = "LMJ-001";
 // shall become a domain someday
-String serverName_full = "http://{local IP}:8000/postFullSensordata"
+String serverName_full = "http://{local IP}:8000/postFullSensordata";
 // String serverName_ind = "http://{local IP}:8000/postSensordata"
 
 // ------------------------------------------------------------------------------------------

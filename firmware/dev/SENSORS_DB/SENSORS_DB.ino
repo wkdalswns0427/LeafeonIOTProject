@@ -13,7 +13,6 @@
 #include <Update.h>
 #include <HTTPClient.h>
 #include "config.h"
-#include "dbconfig.h"
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // elements of SEN0335 : I2C
@@ -201,18 +200,18 @@ uint16_t *readPMS(){
   while (Serial1.available()) { Serial1.read(); }
   pms.requestRead();
   if (pms.readUntil(pmsdata)){
-      data[0] = pmsdata.PM_AE_UG_0_1;
+      data[0] = pmsdata.PM_AE_UG_1_0;
       data[1] = pmsdata.PM_AE_UG_2_5;
-      data[2] = pmsdata.PM_AE_UG_1_0;
+      data[2] = pmsdata.PM_AE_UG_10_0;
   }
   return data;
 }
 
 // ------------------------ create_json? ----------------------------
-void sensorPOST(struct SENDATA){
+void sensorPOST(SENDATA SENDATA){
     sensorData.clear();
     sensorData["DEV_ID"] = Device_id;
-    sensorData["TIME"] = "2023-02-16 15:38:21"
+    sensorData["TIME"] = "2023-02-16 15:38:21";
     sensorData["TEMP"] = SENDATA.temperature;
     sensorData["HUMI"] = SENDATA.humidity;
     sensorData["PRES"] = SENDATA.pressure;
@@ -225,12 +224,12 @@ void sensorPOST(struct SENDATA){
 }
 // ----------------------------------------------------------------
 
-void postHTTP(struct SENDATA){
+void postHTTP(SENDATA SENDATA){
   HTTPClient http;
 
-  sensorPOST(SENDATA); // wrong!
+  sensorPOST(SENDATA);
   String requestBody;
-  serializeJson(sensor, requestBody);
+  serializeJson(sensorData, requestBody);
 
   http.begin(serverName_full.c_str()); 
   http.addHeader("Content-Type", "application/json", "Content-Length", requestBody.length());
@@ -239,12 +238,10 @@ void postHTTP(struct SENDATA){
   Serial.println(requestBody);
   int httpResponseCode = http.POST(requestBody);
   if (httpResponseCode > 0) {
-      errcnt_countup(&err_api, 0);
       Serial.print("sensor data post result: ");
       Serial.println(httpResponseCode);
       Serial.println(http.getString());
   } else {
-      errcnt_countup(&err_api, 1);
       Serial.print("error with httpResponseCode: ");
       Serial.println(httpResponseCode);
   }
