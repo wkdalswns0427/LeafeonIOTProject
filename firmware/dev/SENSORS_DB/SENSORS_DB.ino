@@ -235,7 +235,7 @@ void postHTTP(struct SENDATA){
   String requestBody;
   serializeJson(sensor, requestBody);
 
-  http.begin(serverName); //todo : find uri
+  http.begin(serverName_full.c_str()); //todo : find uri
   http.addHeader("Content-Type", "application/json", "Content-Length", requestBody.length());
   
 

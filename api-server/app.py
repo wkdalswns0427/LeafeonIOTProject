@@ -48,7 +48,7 @@ def create_an_item(item:SensorData):
 
     return new_item
 
-@app.post('/postFyllSensordata',response_model=Item,
+@app.post('/postFullSensordata',response_model=Item,
         status_code=status.HTTP_201_CREATED)
 def create_an_item(item:FullSensorData):
     db_item=db.query(dbmodels.FullSensorData).filter(dbmodels.FullSensorData.id==item.id).first()
