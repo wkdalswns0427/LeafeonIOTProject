@@ -52,8 +52,10 @@ unsigned long timerDelay = 5000;
 unsigned lone lastTime = 0;
 StaticJsonDocument<2048> sensorData;
 
+String Device_id = "LMJ-001";
+// shall become a domain someday
 String serverName_full = "http://{local IP}:8000/postFullSensordata"
-String serverName_ind = "http://{local IP}:8000/postSensordata"
+// String serverName_ind = "http://{local IP}:8000/postSensordata"
 
 // ------------------------------------------------------------------------------------------
 // these are not needed when using external web

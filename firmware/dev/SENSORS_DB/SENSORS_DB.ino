@@ -208,34 +208,31 @@ uint16_t *readPMS(){
   return data;
 }
 
+// ------------------------ create_json? ----------------------------
 void sensorPOST(struct SENDATA){
-    sensorData["data"][0]["sensortype"] = SENSOR_TEMP;
-    sensorData["data"][0]["value"] = SENDATA.temperature;
-    sensorData["data"][1]["sensortype"] = SENSOR_HUMI;
-    sensorData["data"][1]["value"] = SENDATA.humidity;
-    sensorData["data"][2]["sensortype"] = SENSOR_PRES;
-    sensorData["data"][2]["value"] = SENDATA.pressure;
-    sensorData["data"][3]["sensortype"] = SENSOR_ALTI;
-    sensorData["data"][3]["value"] = SENDATA.altitude;
-    sensorData["data"][4]["sensortype"] = SENSOR_eCO2;
-    sensorData["data"][4]["value"] = SENDATA.eCO2;
-    sensorData["data"][5]["sensortype"] = SENSOR_TVOC;
-    sensorData["data"][5]["value"] = SENDATA.eTVOC;
-    sensorData["data"][6]["sensortype"] = SENSOR_PM01;
-    sensorData["data"][6]["value"] = SENDATA.PM_AE_UG_1_0;
-    sensorData["data"][7]["sensortype"] = SENSOR_PM25;
-    sensorData["data"][7]["value"] = SENDATA.PM_AE_UG_2_5;
-    sensorData["data"][8]["sensortype"] = SENSOR_PM10;
-    sensorData["data"][8]["value"] = SENDATA.PM_AE_UG_10_0;
+    sensorData.clear();
+    sensorData["DEV_ID"] = Device_id;
+    sensorData["TIME"] = "2023-02-16 15:38:21"
+    sensorData["TEMP"] = SENDATA.temperature;
+    sensorData["HUMI"] = SENDATA.humidity;
+    sensorData["PRES"] = SENDATA.pressure;
+    sensorData["ALTI"] = SENDATA.altitude;
+    sensorData["eCO2"] = SENDATA.eCO2;
+    sensorData["eTVOC"] = SENDATA.eTVOC;
+    sensorData["PM_AE_UG_1_0"] = SENDATA.PM_AE_UG_1_0;
+    sensorData["PM_AE_UG_2_5"] = SENDATA.PM_AE_UG_2_5;
+    sensorData["PM_AE_UG_10_0"] = SENDATA.PM_AE_UG_10_0;
 }
+// ----------------------------------------------------------------
 
 void postHTTP(struct SENDATA){
   HTTPClient http;
-  sensorPOST(SENDATA);
+
+  sensorPOST(SENDATA); // wrong!
   String requestBody;
   serializeJson(sensor, requestBody);
 
-  http.begin(serverName_full.c_str()); //todo : find uri
+  http.begin(serverName_full.c_str()); 
   http.addHeader("Content-Type", "application/json", "Content-Length", requestBody.length());
   
 
@@ -252,7 +249,6 @@ void postHTTP(struct SENDATA){
       Serial.println(httpResponseCode);
   }
 
-  sensor.clear();
   requestBody.clear();
   http.end();
 
@@ -276,7 +272,7 @@ void sensorTask( void *pvParameters){
         printLocalTime();
         display.print("temp(C): "); display.println(SENRESULT.temperature);
         display.print("P(Pa): "); display.println(SENRESULT.pressure);
-        //   display.print("alt(m):  "); display.println(SENRESULT.altitude);
+        display.print("alt(m):  "); display.println(SENRESULT.altitude);
         display.print("hum(%): "); display.println(SENRESULT.humidity);
         display.print("CO2(ppm): "); display.println(SENRESULT.eCO2);
         display.print("TVOC(ppb): "); display.println(SENRESULT.eTVOC);
@@ -296,11 +292,10 @@ void sensorTask( void *pvParameters){
         display.print("IP: "); display.println(WiFi.localIP());
         display.display();
         delay(3000);
-
-        postHTTP(SENRESULT);
         //==============================================================================
 
         CCS811.writeBaseLine(baseline);
+        postHTTP(SENRESULT);
     }
 }
 
@@ -317,7 +312,7 @@ void setup()
   //==============================================================================
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(115200);
-  Serial.print("Leafeon V.1.3");
+  Serial.print("Leafeon V.2.0");
   setupWiFi();
   setupWebServer();
   setupBME();

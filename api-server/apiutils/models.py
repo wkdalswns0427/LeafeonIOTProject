@@ -17,12 +17,12 @@ class SensorData(BaseModel):
     sensordata:float
 
 class FullSensorData(BaseModel):
-    id:int
+    id:str
     time:str
     tempdata:float
+    humidata:float
     pressdata:float
     altdata:float
-    humidata:float
     eco2data:int
     tvocdata:int
     pm01data:int

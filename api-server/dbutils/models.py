@@ -16,7 +16,7 @@ class Item(Base):
         return f"<Item name={self.name} price={self.price}>"
 
 class SensorData(Base):
-    __tablename__='sensor_data'
+    __tablename__='sensor_data_individual'
     id=Column(Integer,primary_key=True)
     time=Column(DateTime)
     sensortype=Column(Integer, nullable=False, default=-1)
@@ -24,12 +24,12 @@ class SensorData(Base):
 
 class FullSensorData(Base):
     __tablename__='sensor_data'
-    id=Column(Integer,primary_key=True)
-    time=Column(DateTime)
+    id=Column(String,primary_key=True)
+    time=Column(String)
     tempdata=Column(float, nullable=False, default=32768)
+    humidata=Column(float, nullable=False, default=32768)
     pressdata=Column(float, nullable=False, default=32768)
     altdata=Column(float, nullable=False, default=32768)
-    humidata=Column(float, nullable=False, default=32768)
     eco2data=Column(Integer, nullable=False, default=32768)
     tvocdata=Column(Integer, nullable=False, default=32768)
     pm01data=Column(Integer, nullable=False, default=32768)

@@ -1,6 +1,6 @@
 # **LeafeonRTOS**
 
-an ESP32 FreeRTOS based IoT indoor environment sensor cluster
+An ESP32 FreeRTOS based IoT indoor environment monitoring system
 
 measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle Dust**, and little bit inaccurate **altitude**
 
@@ -34,7 +34,9 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 
 ## **System Usage**
 
-### **Server**
+![service-diagram](https://user-images.githubusercontent.com/68832065/219280953-859f745e-9cce-441e-b211-0c6bc0a822d6.png)
+
+### **API Server**
 RestAPI by FastAPI framework for python
 
 download requirements before running
@@ -58,3 +60,7 @@ My MySQL database is running on AWS RDS service.
 
 ### **Frontend**
 I do not have a domain at this point. Using `vscode` provided liveserver for development.
+
+---
+### Reference
+- https://microcontrollerslab.com/esp32-rest-api-web-server-get-post-postman/

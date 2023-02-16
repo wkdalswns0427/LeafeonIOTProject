@@ -57,12 +57,12 @@ def create_an_item(item:FullSensorData):
         raise HTTPException(status_code=400,detail="Item already exists")
 
     new_item=dbmodels.FullSensorData(
-        # id=item.id
+        id=item.id,
         time=item.time,
         tempdata=item.tempdata,
+        humidata=item.humidata,
         pressdata=item.pressdata,
         altdata=item.altdata,
-        humidata=item.humidata,
         eco2data=item.eco2data,
         tvocdata=item.tvocdata,
         pm01data=item.pm01data,
