@@ -48,7 +48,7 @@ def create_an_item(item:SensorData):
 
     return new_item
 
-@app.post('/postFullSensordata',response_model=Item,
+@app.post('/postFullSensordata',response_model=FullSensorData,
         status_code=status.HTTP_201_CREATED)
 def create_sensor_data(item:FullSensorData):
     db_item=db.query(dbmodels.FullSensorData).filter(dbmodels.FullSensorData.time==item.time).first()
@@ -56,7 +56,7 @@ def create_sensor_data(item:FullSensorData):
     if db_item is not None:
         raise HTTPException(status_code=400,detail="Item already exists")
 
-    new_item=dbmodels.FullSensorData(
+    sensor_data=dbmodels.FullSensorData(
         id=item.id,
         time=item.time,
         tempdata=item.tempdata,
@@ -69,10 +69,10 @@ def create_sensor_data(item:FullSensorData):
         pm25data=item.pm25data,
         pm10data=item.pm10data
     )
-    db.add(new_item)
+    db.add(sensor_data)
     db.commit()
 
-    return new_item
+    return sensor_data
 
 ###################################### SQLALCHEMY ####################################
 @app.get('/items',response_model=List[Item],status_code=200)
