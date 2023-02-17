@@ -29,7 +29,7 @@ def init():
     hello = "Hello Charmander"
     return hello
 
-@app.post('/postSensordata',response_model=Item,
+@app.post('/postSensordata',response_model=SensorData,
         status_code=status.HTTP_201_CREATED)
 def create_an_item(item:SensorData):
     db_item=db.query(dbmodels.SensorData).filter(dbmodels.SensorData.id==item.id).first()
@@ -50,8 +50,8 @@ def create_an_item(item:SensorData):
 
 @app.post('/postFullSensordata',response_model=Item,
         status_code=status.HTTP_201_CREATED)
-def create_an_item(item:FullSensorData):
-    db_item=db.query(dbmodels.FullSensorData).filter(dbmodels.FullSensorData.id==item.id).first()
+def create_sensor_data(item:FullSensorData):
+    db_item=db.query(dbmodels.FullSensorData).filter(dbmodels.FullSensorData.time==item.time).first()
 
     if db_item is not None:
         raise HTTPException(status_code=400,detail="Item already exists")
@@ -61,7 +61,7 @@ def create_an_item(item:FullSensorData):
         time=item.time,
         tempdata=item.tempdata,
         humidata=item.humidata,
-        pressdata=item.pressdata,
+        presdata=item.presdata,
         altdata=item.altdata,
         eco2data=item.eco2data,
         tvocdata=item.tvocdata,

@@ -1,6 +1,6 @@
 from sqlalchemy.sql.expression import null
 from dbutils.database import Base
-from sqlalchemy import String,Boolean,Integer,Column,Text, Sequence, DateTime
+from sqlalchemy import String,Boolean,Float,Integer,Column,Text, Sequence, DateTime
 
 
 class Item(Base):
@@ -20,16 +20,16 @@ class SensorData(Base):
     id=Column(Integer,primary_key=True)
     time=Column(DateTime)
     sensortype=Column(Integer, nullable=False, default=-1)
-    sensordata=Column(float, nullable=False, default=32768)
+    sensordata=Column(Float, nullable=False, default=32768)
 
 class FullSensorData(Base):
     __tablename__='sensor_data'
     id=Column(String,primary_key=True)
     time=Column(String)
-    tempdata=Column(float, nullable=False, default=32768)
-    humidata=Column(float, nullable=False, default=32768)
-    pressdata=Column(float, nullable=False, default=32768)
-    altdata=Column(float, nullable=False, default=32768)
+    tempdata=Column(Float, nullable=False, default=32768)
+    humidata=Column(Float, nullable=False, default=32768)
+    presdata=Column(Float, nullable=False, default=32768)
+    altdata=Column(Float, nullable=False, default=32768)
     eco2data=Column(Integer, nullable=False, default=32768)
     tvocdata=Column(Integer, nullable=False, default=32768)
     pm01data=Column(Integer, nullable=False, default=32768)

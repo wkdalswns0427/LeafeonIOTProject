@@ -21,7 +21,7 @@ class FullSensorData(BaseModel):
     time:str
     tempdata:float
     humidata:float
-    pressdata:float
+    presdata:float
     altdata:float
     eco2data:int
     tvocdata:int
