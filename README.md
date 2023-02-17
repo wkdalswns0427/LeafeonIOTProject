@@ -57,6 +57,7 @@ docker run -p 8000:8000 <image_name>
 
 ### **Database**
 My MySQL database is running on AWS RDS service.
+![KakaoTalk_20230217_132130693](https://user-images.githubusercontent.com/68832065/219551759-0c5fa3bc-37f2-4b05-9dcb-e3af8b822eb2.png)
 
 ### **Frontend**
 I do not have a domain at this point. Using `vscode` provided liveserver for development.
