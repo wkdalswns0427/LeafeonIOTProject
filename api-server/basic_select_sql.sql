@@ -1,2 +1,4 @@
 SELECT * FROM leafeon_db.sensor_data
-order by time asc;
+where id = "LTEST-001"
+order by time asc
+;

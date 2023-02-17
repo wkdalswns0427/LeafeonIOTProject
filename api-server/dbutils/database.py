@@ -13,7 +13,7 @@ url = URL.create(drivername="mysql",
             port = db_config.port
         )
 
-db_url = f"mysql+pymysql://{db_config.username}:{db_config.password}@{db_config.host}:{db_config.port}/{db_config.database}?charset=utf8"
+# db_url = f"mysql+pymysql://{db_config.username}:{db_config.password}@{db_config.host}:{db_config.port}/{db_config.database}?charset=utf8"
 
 engine=create_engine(url,
     echo=True

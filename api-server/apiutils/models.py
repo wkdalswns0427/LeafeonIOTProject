@@ -15,6 +15,9 @@ class SensorData(BaseModel):
     time:str
     sensortype:int
     sensordata:float
+    
+    class Config:
+        orm_mode=True
 
 class FullSensorData(BaseModel):
     id:str
@@ -31,3 +34,11 @@ class FullSensorData(BaseModel):
     
     class Config:
         orm_mode=True
+
+class RegisterID(BaseModel):
+    id:str
+    pw:str
+    
+    class Config:
+        orm_mode=True
+    

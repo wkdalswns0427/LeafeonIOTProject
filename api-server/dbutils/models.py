@@ -15,6 +15,7 @@ class Item(Base):
     def __repr__(self):
         return f"<Item name={self.name} price={self.price}>"
 
+
 class SensorData(Base):
     __tablename__='sensor_data_individual'
     id=Column(Integer,primary_key=True)
@@ -22,9 +23,10 @@ class SensorData(Base):
     sensortype=Column(Integer, nullable=False, default=-1)
     sensordata=Column(Float, nullable=False, default=32768)
 
+
 class FullSensorData(Base):
     __tablename__='sensor_data'
-    id=Column(String,primary_key=True)
+    id=Column(String,primary_key=False,nullable=False)
     time=Column(String)
     tempdata=Column(Float, nullable=False, default=32768)
     humidata=Column(Float, nullable=False, default=32768)
@@ -35,3 +37,10 @@ class FullSensorData(Base):
     pm01data=Column(Integer, nullable=False, default=32768)
     pm25data=Column(Integer, nullable=False, default=32768)
     pm10data=Column(Integer, nullable=False, default=32768)
+    
+    
+class RegisterID(Base):
+    __tablename__='user_info'
+    id=Column(String,primary_key=True,nullable=False)
+    pw=Column(String,primary_key=False,nullable=False)
+    
