@@ -402,5 +402,5 @@ FodyWeavers.xsd
 build/
 *.cfg
 *.svd
-api-server/src/db_cofig.py
+api-server/dbutils/db_cofig.py
 firmware/dev/SENSORS_DB/dbconfig.h
