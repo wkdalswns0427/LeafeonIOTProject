@@ -26,7 +26,7 @@ class SensorData(Base):
 
 class FullSensorData(Base):
     __tablename__='sensor_data'
-    id=Column(String,primary_key=False,nullable=False)
+    id=Column(String,primary_key=True,nullable=False)
     time=Column(String)
     tempdata=Column(Float, nullable=False, default=32768)
     humidata=Column(Float, nullable=False, default=32768)
@@ -40,7 +40,7 @@ class FullSensorData(Base):
     
     
 class RegisterID(Base):
-    __tablename__='user_info'
+    __tablename__='users'
     id=Column(String,primary_key=True,nullable=False)
     pw=Column(String,primary_key=False,nullable=False)
     

@@ -11,6 +11,7 @@ from dbutils.database import SessionLocal
 import dbutils.models as dbmodels
 
 app = FastAPI()
+# mqtt stuff needs to be hidden wen using lenovo
 mqtt_config = MQTTConfig()
 fast_mqtt = FastMQTT(config=mqtt_config)
 fast_mqtt.init_app(app)
@@ -95,7 +96,7 @@ def create_user_data(item: RegisterID):
 
     user_data = dbmodels.RegisterID(
         id = item.id,
-        password = item.pw
+        pw = item.pw
     )
     
     db.add(user_data)
