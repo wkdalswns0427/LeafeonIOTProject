@@ -14,12 +14,13 @@ from starlette.middleware.cors import CORSMiddleware
 from utils.apiutils.models import Item, SensorData, FullSensorData, RegisterID
 from utils.dbutils.database import SessionLocal
 import utils.dbutils.models as dbmodels
-from routes import admin_users
+from router import route_admin, route_login
 
 app = FastAPI()
 templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
 app.mount("/static", StaticFiles(directory=os.path.abspath(os.path.expanduser('static'))), name="static") 
-app.include_router(admin_users.router)
+app.include_router(route_admin.router)
+app.include_router(route_login.router)
 # mqtt stuff needs to be hidden wen using lenovo
 # mqtt_config = MQTTConfig()
 # fast_mqtt = FastMQTT(config=mqtt_config)
@@ -69,9 +70,9 @@ def create_sensor_data(item:FullSensorData):
     return sensor_data
 
 
-@app.get("/login", response_class=HTMLResponse)
-async def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+# @app.get("/login/", response_class=HTMLResponse)
+# async def login(request: Request):
+#     return templates.TemplateResponse("login.html", {"request": request})
 
 
 @app.post('/registerId',response_model=RegisterID,
@@ -95,19 +96,6 @@ def create_user_data(item: RegisterID):
     db.commit()
 
     return user_data
-
-
-# @app.get('/admin/userinfo',response_model=List[RegisterID],status_code=200)
-# def get_all_items():
-#     users=db.query(dbmodels.RegisterID).all()
-#     return users
-
-
-# @app.get('/admin/userinfo/{id}',response_model=RegisterID,status_code=status.HTTP_200_OK)
-# def get_an_item(id:str):
-#     item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==id).first()
-#     return item
-
 
 @app.delete('/item/{item_id}')
 def delete_item(id:str):
@@ -141,6 +129,19 @@ def delete_item(id:str):
 #     db.commit()
 
 #     return new_item
+
+
+# @app.get('/admin/userinfo',response_model=List[RegisterID],status_code=200)
+# def get_all_items():
+#     users=db.query(dbmodels.RegisterID).all()
+#     return users
+
+
+# @app.get('/admin/userinfo/{id}',response_model=RegisterID,status_code=status.HTTP_200_OK)
+# def get_an_item(id:str):
+#     item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==id).first()
+#     return item
+
 ##################################################################################################
 
 ############################################ SQLALCHEMY ##########################################
