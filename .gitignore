@@ -404,3 +404,4 @@ build/
 *.svd
 api-server/utils/dbutils/db_cofig.py
 firmware/dev/SENSORS_DB/dbconfig.h
+api-server/commons/secret.*
