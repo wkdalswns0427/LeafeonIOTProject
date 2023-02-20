@@ -3,9 +3,11 @@ FROM python:3.9
 WORKDIR /app/
 
 COPY ./app.py /app/
-COPY ./utils/ /app/utils/
 COPY ./requirements.txt /app/
-COPY ./dbutils/ /app/dbutils
+COPY ./utils/apiutils/ /app/utils/apiutils/
+COPY ./utils/dbutils/ /app/utils/dbutils/
+COPY ./templates/ /app/templates/
+COPY ./static/ /app/static/
 
 
 RUN pip3 install -r requirements.txt

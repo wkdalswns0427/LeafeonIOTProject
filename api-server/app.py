@@ -1,18 +1,26 @@
 import uvicorn
+import os
 import paho.mqtt.client as mqtt
 from fastapi_mqtt.fastmqtt import FastMQTT
 from fastapi_mqtt.config import MQTTConfig
 from pydantic import BaseModel
 from typing import Optional,List
-from fastapi import FastAPI, status,HTTPException
+from fastapi import FastAPI, status,HTTPException,Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles 
 from starlette.middleware.cors import CORSMiddleware
-from apiutils.models import Item, SensorData, FullSensorData, RegisterID
-from dbutils.database import SessionLocal
-import dbutils.models as dbmodels
+
+from utils.apiutils.models import Item, SensorData, FullSensorData, RegisterID
+from utils.dbutils.database import SessionLocal
+import utils.dbutils.models as dbmodels
+from routes import admin_users
 
 app = FastAPI()
+templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
+app.mount("/static", StaticFiles(directory=os.path.abspath(os.path.expanduser('static'))), name="static") 
+app.include_router(admin_users.router)
 # mqtt stuff needs to be hidden wen using lenovo
-
 # mqtt_config = MQTTConfig()
 # fast_mqtt = FastMQTT(config=mqtt_config)
 # fast_mqtt.init_app(app)
@@ -32,26 +40,6 @@ db=SessionLocal()
 def init():
     hello = "Hello Charmander"
     return hello
-
-
-@app.post('/postSensordata',response_model=SensorData,
-        status_code=status.HTTP_201_CREATED)
-def create_an_item(item:SensorData):
-    db_item=db.query(dbmodels.SensorData).filter(dbmodels.SensorData.id==item.id).first()
-
-    if db_item is not None:
-        raise HTTPException(status_code=400,detail="Item already exists")
-
-    new_item=dbmodels.SensorData(
-        # id=item.id
-        time=item.time,
-        sensortype=item.sensortype,
-        sensordata=item.sensordata
-    )
-    db.add(new_item)
-    db.commit()
-
-    return new_item
 
 
 @app.post('/postFullSensordata',response_model=FullSensorData,
@@ -81,11 +69,9 @@ def create_sensor_data(item:FullSensorData):
     return sensor_data
 
 
-@app.get('/admin/userinfo',response_model=List[RegisterID],status_code=200)
-def get_all_items():
-    users=db.query(dbmodels.RegisterID).all()
-
-    return users
+@app.get("/login", response_class=HTMLResponse)
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 
 @app.post('/registerId',response_model=RegisterID,
@@ -110,10 +96,17 @@ def create_user_data(item: RegisterID):
 
     return user_data
 
-@app.get('/userinfo/{id}',response_model=RegisterID,status_code=status.HTTP_200_OK)
-def get_an_item(id:str):
-    item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==id).first()
-    return item
+
+# @app.get('/admin/userinfo',response_model=List[RegisterID],status_code=200)
+# def get_all_items():
+#     users=db.query(dbmodels.RegisterID).all()
+#     return users
+
+
+# @app.get('/admin/userinfo/{id}',response_model=RegisterID,status_code=status.HTTP_200_OK)
+# def get_an_item(id:str):
+#     item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==id).first()
+#     return item
 
 
 @app.delete('/item/{item_id}')
@@ -129,7 +122,28 @@ def delete_item(id:str):
     return item_to_delete
 
 
-###################################### SQLALCHEMY ####################################
+############################################ DEPRECATED ##########################################
+# @app.post('/postSensordata',response_model=SensorData,
+#         status_code=status.HTTP_201_CREATED)
+# def create_an_item(item:SensorData):
+#     db_item=db.query(dbmodels.SensorData).filter(dbmodels.SensorData.id==item.id).first()
+
+#     if db_item is not None:
+#         raise HTTPException(status_code=400,detail="Item already exists")
+
+#     new_item=dbmodels.SensorData(
+#         # id=item.id
+#         time=item.time,
+#         sensortype=item.sensortype,
+#         sensordata=item.sensordata
+#     )
+#     db.add(new_item)
+#     db.commit()
+
+#     return new_item
+##################################################################################################
+
+############################################ SQLALCHEMY ##########################################
 # @app.get('/items',response_model=List[Item],status_code=200)
 # def get_all_items():
 #     items=db.query(dbmodels.Item).all()
@@ -183,4 +197,4 @@ def delete_item(id:str):
 #     db.commit()
 
 #     return item_to_delete
-###################################################################################################
+##################################################################################################

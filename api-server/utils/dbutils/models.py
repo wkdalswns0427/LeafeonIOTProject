@@ -1,5 +1,5 @@
 from sqlalchemy.sql.expression import null
-from dbutils.database import Base
+from utils.dbutils.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import String,Boolean,Float,Integer,Column,Text, Sequence, DateTime
 
@@ -39,7 +39,7 @@ class FullSensorData(Base):
     pm25data=Column(Integer, nullable=False, default=32768)
     pm10data=Column(Integer, nullable=False, default=32768)
 
-    manager = relationship("User", back_populates="data")
+    # manager = relationship("User", back_populates="data")
     
 class User(Base):
     __tablename__ = "userdata"
@@ -49,7 +49,7 @@ class User(Base):
     password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
 
-    data = relationship("FullSensorData", back_populates="manager")
+    # data = relationship("FullSensorData", back_populates="manager")
 
     
 class RegisterID(Base):

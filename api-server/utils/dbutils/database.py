@@ -1,7 +1,7 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from dbutils.db_config import db_config
+from utils.dbutils.db_config import db_config
 from sqlalchemy.engine import URL
 import pymysql
 
