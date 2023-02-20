@@ -38,7 +38,16 @@ class FullSensorData(BaseModel):
 class RegisterID(BaseModel):
     id:str
     pw:str
+    email:str
     
     class Config:
         orm_mode=True
     
+class User(BaseModel):
+    id:int
+    email:str
+    password:str
+    is_active:bool
+
+    class Config:
+        orm_mode=True

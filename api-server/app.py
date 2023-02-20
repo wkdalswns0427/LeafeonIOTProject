@@ -12,9 +12,11 @@ import dbutils.models as dbmodels
 
 app = FastAPI()
 # mqtt stuff needs to be hidden wen using lenovo
-mqtt_config = MQTTConfig()
-fast_mqtt = FastMQTT(config=mqtt_config)
-fast_mqtt.init_app(app)
+
+# mqtt_config = MQTTConfig()
+# fast_mqtt = FastMQTT(config=mqtt_config)
+# fast_mqtt.init_app(app)
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -79,7 +81,7 @@ def create_sensor_data(item:FullSensorData):
     return sensor_data
 
 
-@app.get('/registerId',response_model=List[RegisterID],status_code=200)
+@app.get('/admin/userinfo',response_model=List[RegisterID],status_code=200)
 def get_all_items():
     users=db.query(dbmodels.RegisterID).all()
 
@@ -90,13 +92,17 @@ def get_all_items():
         status_code=status.HTTP_201_CREATED)
 def create_user_data(item: RegisterID):
     db_item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==item.id).first()
+    db_email=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.email==item.email).first()
 
     if db_item is not None:
         raise HTTPException(status_code=400,detail="Item already exists")
+    if db_email is not None:
+        raise HTTPException(status_code=400,detail="Email already in use")
 
     user_data = dbmodels.RegisterID(
         id = item.id,
-        pw = item.pw
+        pw = item.pw,
+        email = item.email
     )
     
     db.add(user_data)
