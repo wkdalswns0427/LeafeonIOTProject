@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from typing import Optional,List
 
-from utils.apiutils.models import Item, SensorData, FullSensorData, RegisterID
+from utils.apiutils.models import User, SensorData, FullSensorData
 from utils.dbutils.database import SessionLocal
 import utils.dbutils.models as dbmodels 
 
@@ -13,16 +13,16 @@ db=SessionLocal()
 router = APIRouter()
 templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
 
-@router.get('/admin/userinfo',response_model=List[RegisterID],status_code=200)
+@router.get('/admin/userinfo',response_model=List[User],status_code=200)
 def get_all_items():
-    users=db.query(dbmodels.RegisterID).all()    
+    users=db.query(dbmodels.User).all()    
     return users
 
 
-@router.get('/admin/userinfo/{id}',response_model=RegisterID,status_code=status.HTTP_200_OK)
+@router.get('/admin/userinfo/{id}',response_model=User,status_code=status.HTTP_200_OK)
 def get_an_item(id:str):
     context = {}
-    user=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==id).first()
+    user=db.query(dbmodels.User).filter(dbmodels.User.id==id).first()
     context["request"] = Request
     context["id"] = user.id
     context["pw"] = user.pw

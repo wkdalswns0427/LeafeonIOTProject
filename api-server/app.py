@@ -11,12 +11,13 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles 
 from starlette.middleware.cors import CORSMiddleware
 
-from utils.apiutils.models import Item, SensorData, FullSensorData, RegisterID
+from utils.apiutils.models import FullSensorData, User
 from utils.dbutils.database import SessionLocal
 import utils.dbutils.models as dbmodels
 from router import route_admin, route_login
 
 app = FastAPI()
+db=SessionLocal()
 templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
 app.mount("/static", StaticFiles(directory=os.path.abspath(os.path.expanduser('static'))), name="static") 
 app.include_router(route_admin.router)
@@ -26,7 +27,6 @@ app.include_router(route_login.router)
 # fast_mqtt = FastMQTT(config=mqtt_config)
 # fast_mqtt.init_app(app)
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
@@ -35,19 +35,15 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
-db=SessionLocal()
 @app.get("/")
 def init():
     hello = "Hello Charmander"
     return hello
 
 
-@app.post('/postFullSensordata',response_model=FullSensorData,
-        status_code=status.HTTP_201_CREATED)
+@app.post('/postFullSensordata',response_model=FullSensorData, status_code=status.HTTP_201_CREATED)
 def create_sensor_data(item:FullSensorData):
     db_item=db.query(dbmodels.FullSensorData).filter(dbmodels.FullSensorData.time==item.time).first()
-
     if db_item is not None:
         raise HTTPException(status_code=400,detail="Item already exists")
 
@@ -70,36 +66,9 @@ def create_sensor_data(item:FullSensorData):
     return sensor_data
 
 
-# @app.get("/login/", response_class=HTMLResponse)
-# async def login(request: Request):
-#     return templates.TemplateResponse("login.html", {"request": request})
-
-
-@app.post('/registerId',response_model=RegisterID,
-        status_code=status.HTTP_201_CREATED)
-def create_user_data(item: RegisterID):
-    db_item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==item.id).first()
-    db_email=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.email==item.email).first()
-
-    if db_item is not None:
-        raise HTTPException(status_code=400,detail="Item already exists")
-    if db_email is not None:
-        raise HTTPException(status_code=400,detail="Email already in use")
-
-    user_data = dbmodels.RegisterID(
-        id = item.id,
-        pw = item.pw,
-        email = item.email
-    )
-    
-    db.add(user_data)
-    db.commit()
-
-    return user_data
-
 @app.delete('/item/{item_id}')
 def delete_item(id:str):
-    item_to_delete=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==id).first()
+    item_to_delete=db.query(dbmodels.User).filter(dbmodels.User.id==id).first()
 
     if item_to_delete is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Resource Not Found")
@@ -110,7 +79,10 @@ def delete_item(id:str):
     return item_to_delete
 
 
+##################################################################################################
 ############################################ DEPRECATED ##########################################
+######################################## MOVED TO ROUTER #########################################
+##################################################################################################
 # @app.post('/postSensordata',response_model=SensorData,
 #         status_code=status.HTTP_201_CREATED)
 # def create_an_item(item:SensorData):
@@ -142,8 +114,30 @@ def delete_item(id:str):
 #     item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==id).first()
 #     return item
 
-##################################################################################################
+# @app.post('/registerId',response_model=RegisterID,
+#         status_code=status.HTTP_201_CREATED)
+# def create_user_data(item: RegisterID):
+#     db_item=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.id==item.id).first()
+#     db_email=db.query(dbmodels.RegisterID).filter(dbmodels.RegisterID.email==item.email).first()
 
+#     if db_item is not None:
+#         raise HTTPException(status_code=400,detail="Item already exists")
+#     if db_email is not None:
+#         raise HTTPException(status_code=400,detail="Email already in use")
+
+#     user_data = dbmodels.RegisterID(
+#         id = item.id,
+#         pw = item.pw,
+#         email = item.email
+#     )
+    
+#     db.add(user_data)
+#     db.commit()
+
+#     return user_data
+
+##################################################################################################
+##################################################################################################
 ############################################ SQLALCHEMY ##########################################
 # @app.get('/items',response_model=List[Item],status_code=200)
 # def get_all_items():

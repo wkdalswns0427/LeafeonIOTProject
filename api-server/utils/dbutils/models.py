@@ -41,18 +41,8 @@ class FullSensorData(Base):
 
     # manager = relationship("User", back_populates="data")
     
-class User(Base):
-    __tablename__ = "userdata"
-
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, nullable=False, index=True)
-    password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-
-    # data = relationship("FullSensorData", back_populates="manager")
-
     
-class RegisterID(Base):
+class User(Base):
     __tablename__='users'
     id=Column(String,primary_key=True,nullable=False)
     pw=Column(String,primary_key=False,nullable=False)    
