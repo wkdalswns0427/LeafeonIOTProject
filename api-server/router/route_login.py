@@ -1,6 +1,4 @@
 import os
-# from apis.version1.route_login import login_for_access_token
-
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi import Depends, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -14,7 +12,7 @@ auth_handler = Auth()
 security = HTTPBearer()
 
 db = SessionLocal()
-router = APIRouter() #include_in_schema=False
+router = APIRouter()
 templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
 
 # done
@@ -47,10 +45,6 @@ async def create_user_data(item: User):
 # @router.get("/login/")
 # def login(request: Request):
 #     return templates.TemplateResponse("login.html", {"request": request})
-
-##################################################################################################
-######################################### AUTH EXAMPLES ##########################################
-##################################################################################################
 # done
 @router.post('/login')
 def login(user_details: User):

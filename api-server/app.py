@@ -29,6 +29,5 @@ app.add_middleware(
 )
 
 @app.get("/")
-def init():
-    hello = "Hello Charmander"
-    return hello
+def init(request: Request):
+    return templates.TemplateResponse("initial.html", {"request": request})
