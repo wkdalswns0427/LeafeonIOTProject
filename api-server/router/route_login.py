@@ -5,11 +5,9 @@ from fastapi import APIRouter, HTTPException, Request, status
 from fastapi import Depends, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
 from utils.dbutils.database import SessionLocal
 import utils.dbutils.models as dbmodels 
 from utils.apiutils.models import User
-from commons.Forms import LoginForm
 from commons.auth import Auth
 
 auth_handler = Auth()
@@ -19,10 +17,10 @@ db = SessionLocal()
 router = APIRouter() #include_in_schema=False
 templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
 
-
+# done
 @router.post('/signup',response_model=User,
         status_code=status.HTTP_201_CREATED)
-def create_user_data(item: User):
+async def create_user_data(item: User):
     db_item=db.query(dbmodels.User).filter(dbmodels.User.id==item.id).first()
     db_email=db.query(dbmodels.User).filter(dbmodels.User.email==item.email).first()
 
@@ -45,36 +43,15 @@ def create_user_data(item: User):
         error_msg = 'Failed to signup user'
         return error_msg
 
-
-@router.get("/login/")
-def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-# this one not working yet
-@router.post("/login/")
-async def login(request: Request): # , db: Session = Depends(db)
-    form = LoginForm(request, db = db)
-    await form.load_data()
-    if await form.is_valid():
-        try:
-            form.__dict__.update(msg="Login Successful :)")
-            response = templates.TemplateResponse("login.html", form.__dict__)
-            user_data=db.query(dbmodels.User).filter(dbmodels.User.id==id).first()
-            if user_data.email == response["email"] and user_data.pw == response["password"]:
-                return response
-            else:
-                form.__dict__.update(msg="")
-                form.__dict__.get("errors").append("Incorrect Email or Password")
-                return templates.TemplateResponse("auth/login.html", form.__dict__)
-        except HTTPException:
-            form.__dict__.update(msg="")
-            form.__dict__.get("errors").append("Incorrect Email or Password")
-            return templates.TemplateResponse("auth/login.html", form.__dict__)
-    return templates.TemplateResponse("auth/login.html", form.__dict__)
+# how the fuck do I use this template?
+# @router.get("/login/")
+# def login(request: Request):
+#     return templates.TemplateResponse("login.html", {"request": request})
 
 ##################################################################################################
 ######################################### AUTH EXAMPLES ##########################################
 ##################################################################################################
+# done
 @router.post('/login')
 def login(user_details: User):
     user=db.query(dbmodels.User).filter(dbmodels.User.id==user_details.id).first()
@@ -82,12 +59,10 @@ def login(user_details: User):
         return HTTPException(status_code=401, detail='Invalid username')
     if not auth_handler.verify_password(user_details.pw, user.pw):
         return HTTPException(status_code=401, detail='Invalid password')
-
-    access_token = auth_handler.encode_token(user['key'])
-    refresh_token = auth_handler.encode_refresh_token(user['key'])
+    
+    access_token = auth_handler.encode_token(user.id)
+    refresh_token = auth_handler.encode_refresh_token(user.id)
     return {'access_token': access_token, 'refresh_token': refresh_token}
-# Todo : this login need to be fixed error
-# ValueError: malformed bcrypt hash (checksum must be exactly 31 chars)
 
 
 @router.get('/refresh_token')
@@ -104,12 +79,13 @@ def secret_data(credentials: HTTPAuthorizationCredentials = Security(security)):
         return 'Top Secret data only authorized users can access this info'
 
 
-@router.post('/get-user-data')
+@router.get('/get-user-data') # post?
 def secret_data(credentials: HTTPAuthorizationCredentials = Security(security)):
     token = credentials.credentials
-    decode_result = auth_handler.decode_token(token)
+    decode_result = auth_handler.decode_token(token) # returns id
     if decode_result:
-        return dummyUserData[decode_result]
+        user=db.query(dbmodels.User).filter(dbmodels.User.id==decode_result).first()
+        return user
 
 
 @router.get('/notsecret')
