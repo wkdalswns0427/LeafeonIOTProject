@@ -3,10 +3,12 @@ from fastapi import APIRouter, HTTPException, Request, status
 from fastapi import Depends, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse
 from utils.dbutils.database import SessionLocal
 import utils.dbutils.models as dbmodels 
-from utils.apiutils.models import User
+from utils.apiutils.models import User,LoginModel
 from commons.auth import Auth
+from commons.Forms import SignUpForm
 
 auth_handler = Auth()
 security = HTTPBearer()
@@ -15,9 +17,13 @@ db = SessionLocal()
 router = APIRouter()
 templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
 
-# done
-@router.post('/signup',response_model=User,
-        status_code=status.HTTP_201_CREATED)
+
+@router.get('/signup',status_code=status.HTTP_200_OK)
+def signup_page(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
+
+# done ( stable )
+@router.post('/signup',response_model=User,status_code=status.HTTP_201_CREATED)
 async def create_user_data(item: User):
     db_item=db.query(dbmodels.User).filter(dbmodels.User.id==item.id).first()
     db_email=db.query(dbmodels.User).filter(dbmodels.User.email==item.email).first()
@@ -42,12 +48,13 @@ async def create_user_data(item: User):
         return error_msg
 
 # how the fuck do I use this template?
-# @router.get("/login/")
-# def login(request: Request):
-#     return templates.TemplateResponse("login.html", {"request": request})
+@router.get("/login")
+def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
 # done
 @router.post('/login')
-def login(user_details: User):
+def login(user_details: LoginModel):
     user=db.query(dbmodels.User).filter(dbmodels.User.id==user_details.id).first()
     if user is None:
         return HTTPException(status_code=401, detail='Invalid username')

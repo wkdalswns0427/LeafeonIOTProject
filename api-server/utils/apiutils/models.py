@@ -43,10 +43,9 @@ class User(BaseModel):
     class Config:
         orm_mode=True
         
-# class AuthModel(BaseModel):
-#     id: str
-#     pw: str
+class LoginModel(BaseModel):
+    username: str
+    password: str
     
-#     class Config:
-#         orm_mode=True
-    
+    class Config:
+        orm_mode=True
