@@ -1,41 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://unpkg.com/twinklecss@1.1.0/twinkle.min.css"/>
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="../static/style.css" type="text/css" media="all" />
 </head>
 <body>
-    <div class="flex p-4 m-6 justify-center">
-        <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="POST" action="/auth/login" >
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-              Username
-            </label>
-            <!-- this is username input -->
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" name="username" type="text">
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-              E-mail
-            </label>
-            <!-- this is email input -->
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" name="email" type="text">
-          </div>
-          <div class="mb-6">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-              Password
-            </label>
-            <!-- this is password input -->
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" name="password" type="password">
-          </div>
-          <div class="flex items-center justify-between">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-              Sign Up
-            </button>
-          </div>
-        </form>
-      </div>
+    <div id="container" class="main_container">
+        <div style="padding: 20px;"></div>
+        <div class="login_container">
+            <div class="form_container">
+                <form name="login_form" action="/cookie" method="get">
+                    <div class="form_title_div">
+                        <p class="form_title_p">Register With Us</p>
+                    </div>
+                    <div>
+                        <div>
+                            <a class="form_item_name">username</a>
+                        </div>
+                        <div>
+                            <input type="text" name="username" placeholder="name" class="form_input"/>
+                        </div>
+                        <div class="form_text_alert_padding">
+                            <div id="alert_username" class="form_text_alert"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <a class="form_item_name">Email</a>
+                        </div>
+                        <div>
+                            <input type="text" name="email" placeholder="E-mail" class="form_input"/>
+                        </div>
+                        <div class="form_text_alert_padding">
+                            <div id="alert_email" class="form_text_alert"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <a class="form_item_name">Password</a>
+                        </div>
+                        <div>
+                            <input type="password" name="password" placeholder="Enter password" class="form_input" />
+                        </div>
+                        <div class="form_text_alert_padding">
+                            <div id="alert_password" class="form_text_alert"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <a class="form_item_name">Confirm Password</a>
+                        </div>
+                        <div>
+                            <input type="password" name="password2" onfocus="" placeholder="Enter password again" class="form_input" />
+                        </div>
+                        <div class="form_text_alert_padding">
+                            <div id="alert_password2" class="form_text_alert"></div>
+                        </div>
+                    </div>
+                    <div style="height: 10px;"></div>
+                    <div>
+                        <button type="button" class="form_submit_button" onclick="signup()">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../src/login.js" type="text/javascript"></script>
 </body>
 </html>
