@@ -22,7 +22,7 @@ def create_sensor_data(item:FullSensorData):
     sensor_data=dbmodels.FullSensorData(
         id=item.id,
         time=item.time,
-        tempdata=item.tempdata,
+        tempdata=item.tempdata, #"2023-02-16 15:38:21"
         humidata=item.humidata,
         presdata=item.presdata,
         altdata=item.altdata,

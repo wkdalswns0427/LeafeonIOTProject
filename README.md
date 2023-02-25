@@ -20,7 +20,7 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 - either Arduino IDE or Espressif IDF
 - intermediate level of C/C++
 - Fast API based REST API server running at localhost:8000
-- super simple javascript frontend
+- super simple javascript frontend ... or a NodeJS dashboard...
 - AWS RDS database
 - Docker capabilities
 
@@ -65,3 +65,5 @@ I do not have a domain at this point. Using `vscode` provided liveserver for dev
 ---
 ### Reference
 - https://microcontrollerslab.com/esp32-rest-api-web-server-get-post-postman/
+- https://github.com/jigneshk5/Blynk-IoT-Dashboards
+- https://github.com/subhashissuara/IoT_Dashboard 

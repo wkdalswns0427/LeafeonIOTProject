@@ -40,12 +40,6 @@ void printLocalTime() {
     display.println(&timeinfo, "%H:%M:%S");
 }
 
-void resetDisplay(){
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.setTextSize(1);
-}
-
 void displayInitialTime(){
     struct tm timeinfo;
     if(!getLocalTime(&timeinfo)) {
@@ -60,6 +54,24 @@ void displayInitialTime(){
     display.println(&timeinfo, "%H:%M:%S");
     display.display();
     delay(3000);
+}
+
+char getTimeInfo(){
+    struct tm timeinfo;
+    if(!getLocalTime(&timeinfo)) {
+        Serial.println("Failed to obtain time");
+        return;
+    }
+    char currentDateTime[100];
+    strftime(timeinfo, sizeof(currentDateTime),"%Y-%m-%d %H:%M:%S")
+
+    return currentDateTime;
+}
+
+void resetDisplay(){
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.setTextSize(1);
 }
 
 // show last sensor operate status
@@ -211,7 +223,7 @@ uint16_t *readPMS(){
 void sensorPOST(SENDATA SENDATA){
     sensorData.clear();
     sensorData["DEV_ID"] = Device_id;
-    sensorData["TIME"] = "2023-02-16 15:38:21";
+    sensorData["TIME"] = getTimeInfo();
     sensorData["TEMP"] = SENDATA.temperature;
     sensorData["HUMI"] = SENDATA.humidity;
     sensorData["PRES"] = SENDATA.pressure;
