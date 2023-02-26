@@ -50,7 +50,7 @@ const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
 unsigned long timerDelay = 5000;
 unsigned long lastTime = 0;
-StaticJsonDocument<2048> sensorData;
+StaticJsonDocument<4096> sensorData;
 
 String Device_id = "LMJ-001";
 // shall become a domain someday

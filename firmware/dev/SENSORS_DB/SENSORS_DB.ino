@@ -56,17 +56,18 @@ void displayInitialTime(){
     delay(3000);
 }
 
-void getTimeInfo(){
+char getTimeInfo(){
     struct tm timeinfo;
+    char dummy[1] = {0};
     if(!getLocalTime(&timeinfo)) {
         Serial.println("Failed to obtain time");
-        return;
+        return *dummy;
     }
     char currentDateTime[50];
     strftime(currentDateTime,sizeof(currentDateTime), "%Y-%m-%d %H:%M:%S", &timeinfo);
 
     Serial.println(currentDateTime);
-    // return currentDateTime;
+    return *currentDateTime;
 }
 
 void resetDisplay(){
@@ -223,8 +224,10 @@ uint16_t *readPMS(){
 // ------------------------ create_json? ----------------------------
 void sensorPOST(SENDATA SENDATA){  
     sensorData.clear();
+    char timeinfo = getTimeInfo();
+    Serial.println(timeinfo);
     sensorData["id"] = Device_id;
-    sensorData["time"] = "2023-02-06 18:25:00";
+    sensorData["time"] = timeinfo; // this if problem
     sensorData["tempdata"] = SENDATA.temperature;
     sensorData["humidata"] = SENDATA.humidity;
     sensorData["presdata"] = SENDATA.pressure;
