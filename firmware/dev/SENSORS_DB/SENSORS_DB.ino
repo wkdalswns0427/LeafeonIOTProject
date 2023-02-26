@@ -56,16 +56,17 @@ void displayInitialTime(){
     delay(3000);
 }
 
-char getTimeInfo(){
+void getTimeInfo(){
     struct tm timeinfo;
     if(!getLocalTime(&timeinfo)) {
         Serial.println("Failed to obtain time");
         return;
     }
-    char currentDateTime[100];
-    strftime(timeinfo, sizeof(currentDateTime),"%Y-%m-%d %H:%M:%S")
+    char currentDateTime[50];
+    strftime(currentDateTime,sizeof(currentDateTime), "%Y-%m-%d %H:%M:%S", &timeinfo);
 
-    return currentDateTime;
+    Serial.println(currentDateTime);
+    // return currentDateTime;
 }
 
 void resetDisplay(){
@@ -220,19 +221,19 @@ uint16_t *readPMS(){
 }
 
 // ------------------------ create_json? ----------------------------
-void sensorPOST(SENDATA SENDATA){
+void sensorPOST(SENDATA SENDATA){  
     sensorData.clear();
-    sensorData["DEV_ID"] = Device_id;
-    sensorData["TIME"] = getTimeInfo();
-    sensorData["TEMP"] = SENDATA.temperature;
-    sensorData["HUMI"] = SENDATA.humidity;
-    sensorData["PRES"] = SENDATA.pressure;
-    sensorData["ALTI"] = SENDATA.altitude;
-    sensorData["eCO2"] = SENDATA.eCO2;
-    sensorData["eTVOC"] = SENDATA.eTVOC;
-    sensorData["PM_AE_UG_1_0"] = SENDATA.PM_AE_UG_1_0;
-    sensorData["PM_AE_UG_2_5"] = SENDATA.PM_AE_UG_2_5;
-    sensorData["PM_AE_UG_10_0"] = SENDATA.PM_AE_UG_10_0;
+    sensorData["id"] = Device_id;
+    sensorData["time"] = "2023-02-06 18:25:00";
+    sensorData["tempdata"] = SENDATA.temperature;
+    sensorData["humidata"] = SENDATA.humidity;
+    sensorData["presdata"] = SENDATA.pressure;
+    sensorData["altdata"] = SENDATA.altitude;
+    sensorData["eco2data"] = SENDATA.eCO2;
+    sensorData["tvocdata"] = SENDATA.eTVOC;
+    sensorData["pm01data"] = SENDATA.PM_AE_UG_1_0;
+    sensorData["pm25data"] = SENDATA.PM_AE_UG_2_5;
+    sensorData["pm10data"] = SENDATA.PM_AE_UG_10_0;
 }
 // ----------------------------------------------------------------
 
@@ -305,6 +306,7 @@ void sensorTask( void *pvParameters){
 
         CCS811.writeBaseLine(baseline);
         postHTTP(SENRESULT);
+        getTimeInfo();
     }
 }
 

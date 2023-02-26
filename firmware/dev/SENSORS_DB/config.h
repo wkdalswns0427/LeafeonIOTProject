@@ -43,8 +43,8 @@ typedef struct SENDATA{
 }SENDATA;
 
 const char* host = "esp32";
-const char* ssid = "**********";        //U+Net850C
-const char* password = "*********";    //C87568BJ$F//12345678///csdowu38
+const char* ssid = "U+Net850C";        //U+Net850C
+const char* password = "C87568BJ$F";    //C87568BJ$F//12345678///csdowu38
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 32400;
 const int   daylightOffset_sec = 0;
@@ -54,7 +54,7 @@ StaticJsonDocument<2048> sensorData;
 
 String Device_id = "LMJ-001";
 // shall become a domain someday
-String serverName_full = "http://{local IP}:8000/postFullSensordata";
+String serverName_full = "http://192.168.219.105:8000/postFullSensordata";
 // String serverName_ind = "http://{local IP}:8000/postSensordata"
 
 // ------------------------------------------------------------------------------------------
