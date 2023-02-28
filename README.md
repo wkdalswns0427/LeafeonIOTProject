@@ -28,7 +28,7 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 ```
 1. Sensors Only -> only display with oled
 2. Sensors OTA -> a local OTA server
-3. Sensors MQTT -> a light api server usage of MQTT control + OTA
+3. Sensors MQTT -> a light api server usage of MQTT control + OTA (dev)
 4. Sensors DB -> a light api server running along with AWS RDS DB + OTA
 ```
 
@@ -36,12 +36,17 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 
 ![service-diagram](https://user-images.githubusercontent.com/68832065/219280953-859f745e-9cce-441e-b211-0c6bc0a822d6.png)
 
+### **Firmware**
+open up `config.h` and change&add network settings and db api uri
+
 ### **API Server**
 RestAPI by FastAPI framework for python
 
-download requirements before running
+download requirements before running ( I recommend using Anaconda )
 ```
+cd api-server
 sudo pip3 install -r requirements.txt
+sudo pip3 install -r requirements_windows.txt
 ```
 
 - running local server
