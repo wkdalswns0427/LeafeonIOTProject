@@ -227,7 +227,7 @@ void sensorPOST(SENDATA SENDATA){
     char timeinfo = getTimeInfo();
     Serial.println(timeinfo);
     sensorData["id"] = Device_id;
-    sensorData["time"] = timeinfo; // this if problem
+    sensorData["time"] = String(timeinfo); // this if problem
     sensorData["tempdata"] = SENDATA.temperature;
     sensorData["humidata"] = SENDATA.humidity;
     sensorData["presdata"] = SENDATA.pressure;
