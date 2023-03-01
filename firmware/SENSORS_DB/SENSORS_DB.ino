@@ -56,18 +56,30 @@ void displayInitialTime(){
     delay(3000);
 }
 
-char getTimeInfo(){
+// char getTimeInfo(){
+//     struct tm timeinfo;
+//     char dummy[1] = {0};
+//     if(!getLocalTime(&timeinfo)) {
+//         Serial.println("Failed to obtain time");
+//         return *dummy;
+//     }
+//     char currentDateTime[50];
+//     strftime(currentDateTime,sizeof(currentDateTime), "%Y-%m-%d %H:%M:%S", &timeinfo);
+
+//     Serial.println(currentDateTime);
+//     return *currentDateTime;
+// }
+
+char* getTimeInfo(){
     struct tm timeinfo;
     char dummy[1] = {0};
     if(!getLocalTime(&timeinfo)) {
         Serial.println("Failed to obtain time");
-        return *dummy;
+        return dummy;
     }
     char currentDateTime[50];
     strftime(currentDateTime,sizeof(currentDateTime), "%Y-%m-%d %H:%M:%S", &timeinfo);
-
-    Serial.println(currentDateTime);
-    return *currentDateTime;
+    return currentDateTime;
 }
 
 void resetDisplay(){
@@ -100,7 +112,7 @@ void setupBME(){
 
 void setupCCS(){
     while(CCS811.begin() != 0){
-            // Serial.println("failed to init chip, please check if the chip connection is fine");
+            Serial.println("failed to init chip, please check if the chip connection is fine");
             delay(1000);
         }
     Serial.println("ccs begin success");
