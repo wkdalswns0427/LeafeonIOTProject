@@ -236,10 +236,17 @@ uint16_t *readPMS(){
 // ------------------------ create_json? ----------------------------
 void sensorPOST(SENDATA SENDATA){  
     sensorData.clear();
-    char timeinfo = getTimeInfo();
-    Serial.println(timeinfo);
+    
+    struct tm timeinfo;
+    char currentDateTime[50];
+    if(!getLocalTime(&timeinfo)) {
+      Serial.println("Failed to obtain time");
+    }
+    strftime(currentDateTime,sizeof(currentDateTime), "%Y-%m-%d %H:%M:%S", &timeinfo);
+    Serial.println(currentDateTime);
+
     sensorData["id"] = Device_id;
-    sensorData["time"] = String(timeinfo); // this if problem
+    sensorData["time"] = currentDateTime; // this if problem
     sensorData["tempdata"] = SENDATA.temperature;
     sensorData["humidata"] = SENDATA.humidity;
     sensorData["presdata"] = SENDATA.pressure;
