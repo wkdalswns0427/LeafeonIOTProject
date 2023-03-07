@@ -328,7 +328,6 @@ void sensorTask( void *pvParameters){
 
         CCS811.writeBaseLine(baseline);
         postHTTP(SENRESULT);
-        getTimeInfo();
     }
 }
 
@@ -340,18 +339,20 @@ void serverTask(void *pvParameters){
     }
 }
 
-void setup()
-{
-  //==============================================================================
-  Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
-  Serial.begin(115200);
-  Serial.print("Leafeon V.2.0");
+void setupTotal(){
   setupWiFi();
   setupWebServer();
   setupBME();
   setupCCS();
   setupOLED();
-  //==============================================================================
+}
+
+void setup()
+{
+  Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
+  Serial.begin(115200);
+  Serial.print("Leafeon V.2.0");
+  setupTotal();
   
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
