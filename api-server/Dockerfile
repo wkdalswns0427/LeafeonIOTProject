@@ -9,6 +9,7 @@ COPY ./utils/dbutils/ /app/utils/dbutils/
 COPY ./templates/ /app/templates/
 COPY ./static/ /app/static/
 
+EXPOSE 8000
 
 RUN pip3 install -r requirements.txt
 

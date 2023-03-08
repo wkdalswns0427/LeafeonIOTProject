@@ -28,8 +28,8 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 ```
 1. Sensors Only -> only display with oled
 2. Sensors OTA -> a local OTA server
-3. Sensors MQTT -> a light api server usage of MQTT control + OTA (dev)
-4. Sensors DB -> a light api server running along with AWS RDS DB + OTA
+3. Sensors DB -> a light api server running along with AWS RDS DB + OTA
+4. Sensors MQTT -> a light api server usage of MQTT control + OTA (dev)
 ```
 
 ## **System Usage**
