@@ -56,20 +56,6 @@ void displayInitialTime(){
     delay(3000);
 }
 
-// char getTimeInfo(){
-//     struct tm timeinfo;
-//     char dummy[1] = {0};
-//     if(!getLocalTime(&timeinfo)) {
-//         Serial.println("Failed to obtain time");
-//         return *dummy;
-//     }
-//     char currentDateTime[50];
-//     strftime(currentDateTime,sizeof(currentDateTime), "%Y-%m-%d %H:%M:%S", &timeinfo);
-
-//     Serial.println(currentDateTime);
-//     return *currentDateTime;
-// }
-
 char* getTimeInfo(){
     struct tm timeinfo;
     char dummy[1] = {0};
@@ -243,7 +229,6 @@ void sensorPOST(SENDATA SENDATA){
       Serial.println("Failed to obtain time");
     }
     strftime(currentDateTime,sizeof(currentDateTime), "%Y-%m-%d %H:%M:%S", &timeinfo);
-    Serial.println(currentDateTime);
 
     sensorData["id"] = Device_id;
     sensorData["time"] = currentDateTime; // this if problem
@@ -328,12 +313,13 @@ void sensorTask( void *pvParameters){
 
         CCS811.writeBaseLine(baseline);
         postHTTP(SENRESULT);
+        delay(48000); 
+        // about 1 min for each round
     }
 }
 
 void serverTask(void *pvParameters){
     (void) pvParameters;
-    Serial.println(xPortGetCoreID());
     while(true){
         server.handleClient();
     }
