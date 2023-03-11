@@ -43,9 +43,11 @@ open up `config.h` and change&add network settings and db api uri
 If LCD display is ready, check display for update server IP
 
 if you access the ip you get
+
 ![otalogin](https://user-images.githubusercontent.com/68832065/224346160-5647183e-5392-47a3-8dd2-db6064e5d675.PNG)
 
 log in with default admin:admin and update with your binary file
+
 ![otaupdate](https://user-images.githubusercontent.com/68832065/224346167-eeb9d4da-8304-4b5e-9428-5214e132aeed.PNG)
 
 ### **API Server**
