@@ -22,7 +22,7 @@ def create_sensor_data(item:FullSensorData):
     sensor_data=dbmodels.FullSensorData(
         id=item.id,
         time=item.time,
-        tempdata=item.tempdata, #"2023-02-16 15:38:21"
+        tempdata=item.tempdata, 
         humidata=item.humidata,
         presdata=item.presdata,
         altdata=item.altdata,
@@ -36,6 +36,26 @@ def create_sensor_data(item:FullSensorData):
     db.commit()
 
     return sensor_data
+
+@router.get('/getLatestData',response_model=FullSensorData, status_code=status.HTTP_201_CREATED)
+def getLatestData(item: FullSensorData):
+    db_item=db.query(dbmodels.FullSensorData).order_by(dbmodels.FullSensorData.time.desc()).first()
+
+    latest_data=dbmodels.FullSensorData(
+        time=db_item.time,
+        tempdata=db_item.tempdata,
+        humidata=db_item.humidata,
+        presdata=db_item.presdata,
+        altdata=db_item.altdata,
+        eco2data=db_item.eco2data,
+        tvocdata=db_item.tvocdata,
+        pm01data=db_item.pm01data,
+        pm25data=db_item.pm25data,
+        pm10data=db_item.pm10data
+    )
+
+    return latest_data
+
 
 @router.delete('/item/{item_id}')
 def delete_item(id:str):
