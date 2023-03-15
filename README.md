@@ -54,32 +54,41 @@ log in with default admin:admin and update with your binary file
 RestAPI by FastAPI framework for python
 
 download requirements before running ( I recommend using Anaconda )
-```
+
+```shell
 cd api-server
 sudo pip3 install -r requirements.txt
 sudo pip3 install -r requirements_windows.txt
 ```
 
 - running local server
-```
+
+```shell
 uvicorn app:app --host 0.0.0.0 --reload
 ```
 
 - running local server via Docker
-```
+
+```shell
 docker build -t <image_name> .
 docker run -p 8000:8000 <image_name>
 ```
 
 ### **Database**
+
 My MySQL database is running on AWS RDS service.
 ![캡처](https://user-images.githubusercontent.com/68832065/224329307-613c248f-3214-41a7-a1c0-c7b162cc01ff.PNG)
 
 ### **Frontend**
+
 I do not have a domain at this point. Using `vscode` provided liveserver for development.
 
+![화면 캡처 2023-03-15 152823](https://user-images.githubusercontent.com/68832065/225224989-8a82bafa-7a7b-432c-8bf8-fd83154bbd58.png)
+
 ---
+
 ### Reference
+
 - https://microcontrollerslab.com/esp32-rest-api-web-server-get-post-postman/
 - https://github.com/jigneshk5/Blynk-IoT-Dashboards
 - https://github.com/subhashissuara/IoT_Dashboard 

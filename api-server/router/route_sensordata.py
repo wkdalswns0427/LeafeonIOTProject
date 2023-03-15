@@ -1,10 +1,9 @@
 import os
 from fastapi import APIRouter, Request, status, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
-from starlette.responses import RedirectResponse
 from typing import Optional,List
 
-from utils.apiutils.models import User, SensorData, FullSensorData
+from utils.apiutils.models import FullSensorData
 from utils.dbutils.database import SessionLocal
 import utils.dbutils.models as dbmodels 
 
@@ -39,23 +38,8 @@ def create_sensor_data(item:FullSensorData):
 @router.get('/getLatestData', status_code=status.HTTP_201_CREATED)
 def getLatestData():
     db_item=db.query(dbmodels.FullSensorData).order_by(dbmodels.FullSensorData.time.desc()).first()
-    print(db_item)
-    latest_data=dbmodels.FullSensorData(
-        time=db_item.time,
-        tempdata=db_item.tempdata,
-        humidata=db_item.humidata,
-        presdata=db_item.presdata,
-        altdata=db_item.altdata,
-        eco2data=db_item.eco2data,
-        tvocdata=db_item.tvocdata,
-        pm01data=db_item.pm01data,
-        pm25data=db_item.pm25data,
-        pm10data=db_item.pm10data
-    )
-    print(latest_data)
     
     data = []
-    
     data.append({"time":db_item.time, 
                   "tempdata":db_item.tempdata, "humidata":db_item.humidata,
                   "presdata":db_item.presdata, "altdata":db_item.altdata, 
@@ -63,8 +47,6 @@ def getLatestData():
                   "pm01data":db_item.pm01data, "pm25data":db_item.pm25data, "pm10data":db_item.pm10data})
     
     response = JSONResponse(content=data)
-
-    print(response)
     return response
 
 
