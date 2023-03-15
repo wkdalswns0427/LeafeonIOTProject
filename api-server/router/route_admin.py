@@ -11,7 +11,7 @@ import utils.dbutils.models as dbmodels
 
 db=SessionLocal()
 router = APIRouter()
-templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
+# templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
 
 @router.get('/admin/userinfo',response_model=List[User],status_code=200)
 def get_all_items():

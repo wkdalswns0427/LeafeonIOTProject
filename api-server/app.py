@@ -12,8 +12,8 @@ from router import route_admin, route_login, route_sensordata, route_mqtt
 
 app = FastAPI()
 db=SessionLocal()
-templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
-app.mount("/static", StaticFiles(directory=os.path.abspath(os.path.expanduser('static'))), name="static") 
+# templates = Jinja2Templates(directory=os.path.abspath(os.path.expanduser('templates')))
+# app.mount("/static", StaticFiles(directory=os.path.abspath(os.path.expanduser('static'))), name="static") 
 app.include_router(route_admin.router)
 app.include_router(route_login.router)
 app.include_router(route_sensordata.router)
