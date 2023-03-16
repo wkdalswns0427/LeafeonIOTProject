@@ -29,7 +29,7 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 1. Sensors Only -> only display with oled
 2. Sensors OTA -> a local OTA server
 3. Sensors DB -> a light api server running along with AWS RDS DB + OTA
-4. Sensors MQTT -> a light api server usage of MQTT control + OTA (dev)
+4. Sensors MQTT -> a light api server usage of MQTT control + OTA (dev, on hold)
 ```
 
 ## **System Usage**
@@ -86,8 +86,4 @@ I do not have a domain at this point. Using `vscode` provided liveserver for dev
 ![스크린샷 2023-03-16 151442](https://user-images.githubusercontent.com/68832065/225531357-a070f630-52d6-47f5-babf-25e75f816233.png)
 ---
 
-### Reference
-
-- https://microcontrollerslab.com/esp32-rest-api-web-server-get-post-postman/
-- https://github.com/jigneshk5/Blynk-IoT-Dashboards
-- https://github.com/subhashissuara/IoT_Dashboard 
+contact me freely if there's any question!
