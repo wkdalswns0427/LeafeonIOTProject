@@ -7,16 +7,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-sclae=1.0">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-
+    <style>
+        table, th, td {
+          border: 1px solid #bcbcbc;
+          align: center
+        }
+        table {
+          width: 100%;
+        }
+        th, td {
+            width: 10%;
+        }
+      </style>
 </head>
 
 <body>
     <h1>Leafeon Dashboard</h1>
-    <table id="table-header" border="1" bordercolor="#84C520" width ="500" height="300" align = "center">
-        <tr bgcolor="84C520" align ="center">
+    <table id="table-header" border="1" bordercolor="#84C520">
+        <tr bgcolor="84C520">
             <p><td colspan = "3" span style="color:white">Current Room Environment</td></p>
         </tr>
-    <table id="sensor-header" border="1" bordercolor="84C520" width ="500" height="300" align = "center">
+    <table id="sensor-header" border="1" bordercolor="84C520">
 		<tr>
             <td>TIME</td>
             <td>Temperature(C)</td>
@@ -30,7 +41,7 @@
             <td>pm10.0(ug/m3)</td>
 		</tr>
 	</table>
-    <table id="sensor-table" border="1" bordercolor="84C520" width ="500" height="300" align = "center">
+    <table id="sensor-table" border="1" bordercolor="84C520">
 		<tr>
 			<th>time</th>
 			<th>tempdata</th>
