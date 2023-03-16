@@ -30,4 +30,6 @@ app.add_middleware(
 
 @app.get("/")
 def init(request: Request):
-    return templates.TemplateResponse("initial.html", {"request": request})
+    init = "initial page.. wait"
+    return init
+    # return templates.TemplateResponse("initial.html", {"request": request})

@@ -11,8 +11,26 @@
 </head>
 
 <body>
-    <h1>Sensor Data</h1>
-    <table id="sensor-table">
+    <h1>Leafeon Dashboard</h1>
+    <table id="table-header" border="1" bordercolor="#84C520" width ="500" height="300" align = "center">
+        <tr bgcolor="84C520" align ="center">
+            <p><td colspan = "3" span style="color:white">Current Room Environment</td></p>
+        </tr>
+    <table id="sensor-header" border="1" bordercolor="84C520" width ="500" height="300" align = "center">
+		<tr>
+            <td>TIME</td>
+            <td>Temperature(C)</td>
+            <td>Humidity(%)</td>
+            <td>Pressure(Pa)</td>
+            <td>Altitude(m)</td>
+            <td>eCO2(ppm)</td>
+            <td>eTVOC(ppb)</td>
+            <td>pm1.0(ug/m3)</td>
+            <td>pm2.5(ug/m3)</td>
+            <td>pm10.0(ug/m3)</td>
+		</tr>
+	</table>
+    <table id="sensor-table" border="1" bordercolor="84C520" width ="500" height="300" align = "center">
 		<tr>
 			<th>time</th>
 			<th>tempdata</th>
