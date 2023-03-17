@@ -2,60 +2,50 @@
 <html lang="en">
 <head>
     <title>Leafeon Dashboard</title>
-    <link rel="icon" href="favicon_char.ico">
+    <link rel="icon" href="../img/favicon_char.ico">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-sclae=1.0">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-    <style>
-        table, th, td {
-          border: 1px solid #bcbcbc;
-          align: center
-        }
-        table {
-          width: 100%;
-        }
-        th, td {
-            width: 10%;
-        }
-      </style>
+    <link rel="stylesheet" href="../static/dashboard.css" type="text/css" media="all" />
 </head>
 
 <body>
-    <h1>Leafeon Dashboard</h1>
-    <table id="table-header" border="1" bordercolor="#84C520">
-        <tr bgcolor="84C520">
-            <p><td colspan = "3" span style="color:white">Current Room Environment</td></p>
-        </tr>
-    <table id="sensor-header" border="1" bordercolor="84C520">
+  <h1>Leafeon Dashboard</h1>
+  <table id="table-header" border="1" bordercolor="#84C520">
+      <tr bgcolor="84C520">
+        <p><td colspan = "3" span style="color:white">Current Room Environment</td></p>
+      </tr>
+  <table id="sensor-header" border="1" bordercolor="84C520">
 		<tr>
-            <td>TIME</td>
-            <td>Temperature(C)</td>
-            <td>Humidity(%)</td>
-            <td>Pressure(Pa)</td>
-            <td>Altitude(m)</td>
-            <td>eCO2(ppm)</td>
-            <td>eTVOC(ppb)</td>
-            <td>pm1.0(ug/m3)</td>
-            <td>pm2.5(ug/m3)</td>
-            <td>pm10.0(ug/m3)</td>
+      <th>TIME</th>
+      <th>Temperature(C)</th>
+      <th>Humidity(%)</th>
+      <th>Pressure(Pa)</th>
+      <th>Altitude(m)</th>
+      <th>eCO2(ppm)</th>
+      <th>eTVOC(ppb)</th>
+      <th>pm1.0(ug/m3)</th>
+      <th>pm2.5(ug/m3)</th>
+      <th>pm10.0(ug/m3)</th>
 		</tr>
 	</table>
-    <table id="sensor-table" border="1" bordercolor="84C520">
+  <table id="sensor-table" border="1" bordercolor="84C520">
 		<tr>
 			<th>time</th>
 			<th>tempdata</th>
 			<th>humidata</th>
-            <th>presdata</th>
-            <th>altdata</th>
-            <th>eco2data</th>
-            <th>tvocdata</th>
-            <th>pm01data</th>
-            <th>pm25data</th>
-            <th>pm10data</th>
+      <th>presdata</th>
+      <th>altdata</th>
+      <th>eco2data</th>
+      <th>tvocdata</th>
+      <th>pm01data</th>
+      <th>pm25data</th>
+      <th>pm10data</th>
 		</tr>
 	</table>
-    <script src="../src/dashboard.js"></script>
 
+
+  <script src="../src/dashboard.js"></script>
 </body>
 </html>
