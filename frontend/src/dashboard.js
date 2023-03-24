@@ -20,6 +20,7 @@ async function updateSensorTable() {
         row.insertCell().textContent = dataPoint.pm10data;
 
         humidity = dataPoint.humidata;
+        temperature = dataPoint.tempdata;
     }
     console.log(sensorData)
 
@@ -27,24 +28,7 @@ async function updateSensorTable() {
     sensorTable.replaceChild(tableBody, sensorTable.tBodies[0]);
 }
 
-// Call the updateSensorTable function initially and every 5 seconds thereafter
-updateSensorTable();
-setInterval(updateSensorTable, 5000);
-
-
- function color1(i, classname,colorname){
-    $(classname).css({
-         "background":"conic-gradient("+colorname+" 0% "+i+"%, #ffffff "+i+"% 100%)"
-    });
- }
-
- $(window).ready(function(){
-    draw(humidity, '.pie-chart1', '#ccc');
-//    draw(50, '.pie-chart2', '#8b22ff');
-//    draw(30, '.pie-chart3','#ff0');
- });
-
- function draw(max, classname, colorname){
+async function draw(max, classname, colorname){
     var i=1;
      var func1 = setInterval(function(){
        if(i<max){
@@ -60,3 +44,16 @@ setInterval(updateSensorTable, 5000);
          "background":"conic-gradient("+colorname+" 0% "+i+"%, #ffffff "+i+"% 100%)"
     });
  }
+
+$(window).ready(function(){
+  updateSensorTable();
+  draw(humidity, '.pie-chart-humi', '#ccc'); // humidity
+  draw(temperature, '.pie-chart-temp', '#8b22ff'); //temp
+//    draw(30, '.pie-chart3','#ff0');
+});
+
+
+ // Call the updateSensorTable function initially and every 5 seconds thereafter
+// updateSensorTable();
+setInterval(updateSensorTable, 5000);
+setInterval(draw, 5000);
