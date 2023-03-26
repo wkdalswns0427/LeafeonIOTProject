@@ -1,5 +1,6 @@
 const url_get = 'http://localhost:8000/getLatestData'
 var humidity;
+var temperature = 0;
 
 async function updateSensorTable() {
     const response = await fetch(url_get);
@@ -18,12 +19,10 @@ async function updateSensorTable() {
         row.insertCell().textContent = dataPoint.pm01data;
         row.insertCell().textContent = dataPoint.pm25data;
         row.insertCell().textContent = dataPoint.pm10data;
+        var tempGauge = createVerGauge('temp', -20, 60, ' °C').setVal(dataPoint.tempdata);
 
         humidity = dataPoint.humidata;
-        temperature = dataPoint.tempdata;
     }
-    console.log(sensorData)
-
     const sensorTable = document.getElementById("sensor-table");
     sensorTable.replaceChild(tableBody, sensorTable.tBodies[0]);
 }
@@ -39,21 +38,29 @@ async function draw(max, classname, colorname){
        }
      },10);
  }
- function color1(i, classname,colorname){
+
+function color1(i, classname,colorname){
     $(classname).css({
          "background":"conic-gradient("+colorname+" 0% "+i+"%, #ffffff "+i+"% 100%)"
     });
- }
+}
 
+async function update_pie_chart(max, classname, colorname){
+  draw(humidity, '.pie-chart-humi', '#ccc');
+}
+
+function click_test()
+{
+  var inputTempVariable = document.getElementById('input-data').value;
+  document.getElementById('current-temp').innerHTML = inputTempVariable;
+}
+
+//actual action part
 $(window).ready(function(){
   updateSensorTable();
   draw(humidity, '.pie-chart-humi', '#ccc'); // humidity
-  draw(temperature, '.pie-chart-temp', '#8b22ff'); //temp
-//    draw(30, '.pie-chart3','#ff0');
 });
+// Call the updateSensorTable function initially and every 5 seconds thereafter
+setInterval(updateSensorTable, 60000);
+setInterval(update_pie_chart, 60000);
 
-
- // Call the updateSensorTable function initially and every 5 seconds thereafter
-// updateSensorTable();
-setInterval(updateSensorTable, 5000);
-setInterval(draw, 5000);

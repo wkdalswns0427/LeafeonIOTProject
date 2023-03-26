@@ -11,7 +11,9 @@
 </head>
 
 <body>
+  <!-- <div id="title">Leafeon Dashboard</div> -->
   <h1>Leafeon Dashboard</h1>
+<section id = "dashboard">
   <table id="table-header" border="1" bordercolor="#84C520">
       <tr bgcolor="84C520">
         <p><td colspan = "3" span style="color:white">Current Room Environment</td></p>
@@ -46,10 +48,27 @@
 		</tr>
 	</table>
   <br>
-  <div class="pie-chart pie-chart-humi"><span class="center">humi</span></div>
-  <div class="pie-chart pie-chart-temp"><span class="center">temp</span></div>
+  <div class="gauge-section">
+    <h3>Temperature</h3>
+    <div id="temp" class="gauge"></div>
+    
+    <h3>Humidity</h3>
+    <div class="pie-chart pie-chart-humi">
+      <span class="center">humi</span>
+    </div>
+  </div>
 
+  <!-- input -->
+  <div id="input-temp-section">
+    <input type="text" id="input-data">
+    <button onclick="click_test()">set</button>
+  </div>
+</section>
+  <section id="temp-display">
+    <span id="current-temp">76</span>  
+  </section>
 
+  <script src="../src/gauge.js"></script>
   <script src="../src/dashboard.js"></script>
 </body>
 </html>

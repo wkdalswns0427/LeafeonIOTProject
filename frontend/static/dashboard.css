@@ -73,3 +73,25 @@ html {
     font-size:30px;
      transform: translate(-50%, -50%);
   }
+
+  .vGauge {
+    width: 145px;
+    height: 145px;
+  }
+  
+  .vGauge-base {
+    fill: #edebeb;
+  }
+  
+  .vGauge-progress {
+  
+  }
+  
+  .vGauge-val {
+    font-weight: 700;
+    font-size: 1.3em;
+  }
+  
+  .vGauge-min-val, .vGauge-max-val {
+    fill: #b3b3b3;
+  }
