@@ -49,23 +49,32 @@
 	</table>
   <br>
   <div class="gauge-section">
+    <div id="wrap">
     <h3>Temperature</h3>
-    <div id="temp" class="gauge"></div>
+    <div id="temp" class="gauge-temp"></div></div>
 
-    <h3>PM1.0</h3>
-    <div id="pm1_0" class="gauge"></div>
-    <h3>PM2.5</h3>
-    <div id="pm2_5" class="gauge"></div>
-    <h3>PM10.0</h3>
-    <div id="pm10_0" class="gauge"></div>
-    
+    <div id="wrap">
     <h3>Humidity</h3>
     <div class="pie-chart pie-chart-humi">
       <span class="center">humi</span>
-    </div>
-  </div>
+    </div></div>
+    
+
+    <div id="wrap">
+    <h3>PM1.0</h3>
+    <div id="pm1_0" class="gauge-pm1_0"></div></div>
+    
+    <div id="wrap">
+    <h3>PM2.5</h3>
+    <div id="pm2_5" class="gauge-pm2_5"></div></div>
+    
+ 
+    <h3>PM10.0</h3>
+    <div id="pm10_0" class="gauge-pm10"></div></div>
+
 
   <!-- input -->
+  <br>
   <div id="input-temp-section">
     <input type="text" id="input-data">
     <button onclick="click_test()">set</button>

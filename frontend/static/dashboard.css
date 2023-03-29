@@ -95,3 +95,12 @@ html {
   .vGauge-min-val, .vGauge-max-val {
     fill: #b3b3b3;
   }
+
+  #wrap > div {
+    float: left;
+    /* width: 100px;
+    height: 100px;
+    font-size: 20px;
+    line-height: 100px;
+    text-align: center; */
+}
