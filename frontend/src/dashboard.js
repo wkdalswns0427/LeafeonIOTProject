@@ -49,7 +49,7 @@ function color1(i, classname,colorname){
 }
 
 async function update_pie_chart(max, classname, colorname){
-  draw(humidity, '.pie-chart-humi', '#ccc');
+  draw(humidity, '.pie-chart-humi', '84C52');
 }
 
 // ------------------------------ dummy ----------------------------------------
@@ -64,7 +64,7 @@ function click_test()
 //actual action part
 $(window).ready(function(){
   updateSensorTable();
-  draw(humidity, '.pie-chart-humi', '#ccc'); // humidity
+  draw(humidity, '.pie-chart-humi', '84C52'); // humidity
 });
 // Call the updateSensorTable function initially and every 5 seconds thereafter
 setInterval(updateSensorTable, 60000);
