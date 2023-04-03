@@ -75,28 +75,6 @@ html {
      transform: translate(-50%, -50%);
   }
 
-  .vGauge {
-    width: 145px;
-    height: 145px;
-  }
-  
-  .vGauge-base {
-    fill: #edebeb;
-  }
-  
-  .vGauge-progress {
-  
-  }
-  
-  .vGauge-val {
-    font-weight: 700;
-    font-size: 1.3em;
-  }
-  
-  .vGauge-min-val, .vGauge-max-val {
-    fill: #b3b3b3;
-  }
-
   #wrap > div {
     float: left;
     height: 150px;

@@ -83,7 +83,8 @@ My MySQL database is running on AWS RDS service.
 
 I do not have a domain at this point. Using `vscode` provided liveserver for development.
 
-![스크린샷 2023-03-16 180517](https://user-images.githubusercontent.com/68832065/225567737-e31b053a-f436-46d6-b822-40945c05b355.png)
+![화면 캡처 2023-04-03 173027](https://user-images.githubusercontent.com/68832065/229455005-cc09b897-641a-4e8d-b35f-7569e2e4af79.png)
+
 
 ---
 

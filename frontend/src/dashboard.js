@@ -21,9 +21,10 @@ async function updateSensorTable() {
         humidity = dataPoint.humidata;
 
         var tempGauge = createVerGauge('temp', -20, 60, ' °C').setVal(dataPoint.tempdata);
-        var pm1_0Gauge = createVerGauge2('pm1_0', 0, 100, ' ug/m3').setVal(dataPoint.pm01data);
-        var pm2_5Gauge = createVerGauge('pm2_5', 0, 76, ' ug/m3').setVal(dataPoint.pm25data);
-        var pm10Gauge = createVerGauge('pm10_0', 0, 151, ' ug/m3').setVal(dataPoint.pm10data);
+        var humGauge = createRadGauge('hum', 0, 100, '%').setVal(dataPoint.humidata);
+
+        // var pm2_5Gauge = createVerGauge('pm2_5', 0, 76, ' ug/m3').setVal(dataPoint.pm25data);
+        // var pm10Gauge = createVerGauge('pm10_0', 0, 151, ' ug/m3').setVal(dataPoint.pm10data);
     }
     const sensorTable = document.getElementById("sensor-table");
     sensorTable.replaceChild(tableBody, sensorTable.tBodies[0]);
@@ -64,7 +65,8 @@ function click_test()
 //actual action part
 $(window).ready(function(){
   updateSensorTable();
-  draw(humidity, '.pie-chart-humi', '84C52'); // humidity
+  var tempGauge = createVerGauge('temp', -20, 60, ' °C').setVal(0);
+  var humGauge = createRadGauge('hum', 0, 100, '%').setVal(0);
 });
 // Call the updateSensorTable function initially and every 5 seconds thereafter
 setInterval(updateSensorTable, 60000);
