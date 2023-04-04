@@ -8,7 +8,7 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 
 ### **Electronics**
 
-- ESP32 dev module : Lolin D32 Pro (any ESP32 module would be fine)
+- ESP32 dev module : Lolin D32 Pro (precisely, need dual core)
 - DFRobot SEN0335(CCS811 + BME280) : CO2, TVOC sensor + Temperature, Humidity sensor
 - Plantower PMS7003 : Particle Dust sensor
 - YW Robotics 0.96 inch OLED <- this thing is way off spec sheet (works fine with 3.3v, addr : 0x3C, ssd1306 not ssh...)
@@ -17,15 +17,16 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 
 ### **Software**
 
-- either Arduino IDE or Espressif IDF
+- Arduino IDE (or Espressif IDF)
 - intermediate level of C/C++
 - Fast API based REST API server running at localhost:8000
 - super simple javascript frontend ... or a NodeJS dashboard...
-- AWS RDS database
-- Docker capabilities
+- AWS RDS - MySQL database
+- Docker utility
 
-**5 types of firmwares**
-```
+**<5 types of firmwares>**
+
+```text
 1. Sensors Only -> only display with oled
 2. Sensors OTA -> a local OTA server
 3. Sensors DB -> a light api server running along with AWS RDS DB + OTA
@@ -37,10 +38,12 @@ measures indoor **Temperature**, **humidity**, **eCO2**, **eTVOC**, **Particle D
 ![service-diagram](https://user-images.githubusercontent.com/68832065/219280953-859f745e-9cce-441e-b211-0c6bc0a822d6.png)
 
 ### **Firmware**
+
 open up `config.h` and change&add network settings and db api uri
 
 ### **OTA Update**
-If LCD display is ready, check display for update server IP
+
+If LCD display is ready, check display for update server IP (should be connected to same WiFi)
 
 if you access the ip you get
 
@@ -51,6 +54,7 @@ log in with default admin:admin and update with your binary file
 ![otaupdate](https://user-images.githubusercontent.com/68832065/224346167-eeb9d4da-8304-4b5e-9428-5214e132aeed.PNG)
 
 ### **API Server**
+
 RestAPI by FastAPI framework for python
 
 download requirements before running ( I recommend using Anaconda )
@@ -84,7 +88,6 @@ My MySQL database is running on AWS RDS service.
 I do not have a domain at this point. Using `vscode` provided liveserver for development.
 
 ![화면 캡처 2023-04-03 173027](https://user-images.githubusercontent.com/68832065/229455005-cc09b897-641a-4e8d-b35f-7569e2e4af79.png)
-
 
 ---
 
