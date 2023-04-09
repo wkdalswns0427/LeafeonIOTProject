@@ -120,8 +120,10 @@ void setupOLED(){
 
     display.setTextSize(1);
     display.setTextColor(WHITE);
-    display.setCursor(4, 28);
-    display.println("** Begin Leafeon **");
+    display.setCursor(4, 16);
+    display.println("* Leafeon V.2.0 *");
+    display.println("* maintainer ");
+    display.println("* wkdalswns0427 ");
     display.display();
     delay(2000);
 }
@@ -268,7 +270,6 @@ void postHTTP(SENDATA SENDATA){
 
   requestBody.clear();
   http.end();
-
 }
 
 // main function
@@ -337,7 +338,7 @@ void setup()
 {
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
   Serial.begin(115200);
-  Serial.print("Leafeon V.2.0");
+  Serial.print("Leafeon V.2.1");
   setupTotal();
   
   // init and get the time
@@ -349,7 +350,7 @@ void setup()
         "sensorTask",
         4096,
         NULL, // task function input
-        3,
+        2,
         &Task1,
         RUNNING_CORE
     );
