@@ -1,5 +1,6 @@
 FROM python:3.9
 
+RUN mkdir /app/
 WORKDIR /app/
 
 COPY ./app.py /app/
@@ -10,7 +11,6 @@ COPY ./templates/ /app/templates/
 COPY ./static/ /app/static/
 
 EXPOSE 8000
-
 RUN pip3 install -r requirements.txt
 
-CMD uvicorn app:app --host=0.0.0.0 --reload
+CMD ["uvicorn", "app:app", "--host","0.0.0.0", "--reload","--port","8000"]
