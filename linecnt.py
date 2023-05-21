@@ -2,7 +2,7 @@ import glob
 import operator
 
 # 조사할 디렉토리 경로
-ROOT_DIR = '/Users/pawp/Desktop/versionControl/LeafeonRTOS/'
+ROOT_DIR = '/Users/pawp/Desktop/PersonalGit/LeafeonRTOS/'
 
 # 조사할 확장자 목록
 extensions = [
@@ -18,7 +18,7 @@ extensions = [
 
 # 무시할 디렉토리 경로 목록
 ignore_paths = [
-    '/Users/pawp/Desktop/versionControl/LeafeonRTOS/firmware/lib'
+    '/Users/pawp/Desktop/PersonalGit/LeafeonRTOS/firmware/lib'
 ]
 
 # 무시할 파일 목록

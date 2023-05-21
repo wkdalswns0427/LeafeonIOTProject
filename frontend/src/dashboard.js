@@ -4,11 +4,12 @@ var humidity;
 async function updateSensorTable() {
     const response = await fetch(url_get);
     const sensorData = await response.json();
-
+    
     const tableBody = document.createElement("tbody");
     for (const dataPoint of sensorData) {
         const row = tableBody.insertRow();
         row.insertCell().textContent = dataPoint.time;
+        
         row.insertCell().textContent = dataPoint.tempdata;
         row.insertCell().textContent = dataPoint.humidata;
         row.insertCell().textContent = dataPoint.presdata;
@@ -18,10 +19,11 @@ async function updateSensorTable() {
         row.insertCell().textContent = dataPoint.pm01data;
         row.insertCell().textContent = dataPoint.pm25data;
         row.insertCell().textContent = dataPoint.pm10data;
+
         humidity = dataPoint.humidata;
 
         var tempGauge = createVerGauge('temp', -20, 60, ' °C').setVal(dataPoint.tempdata);
-        var humGauge = createRadGauge('hum', 0, 100, '%').setVal(dataPoint.humidata);
+        // var humGauge = createRadGauge('hum', 0, 100, '%').setVal(dataPoint.humidata);
 
         // var pm2_5Gauge = createVerGauge('pm2_5', 0, 76, ' ug/m3').setVal(dataPoint.pm25data);
         // var pm10Gauge = createVerGauge('pm10_0', 0, 151, ' ug/m3').setVal(dataPoint.pm10data);
